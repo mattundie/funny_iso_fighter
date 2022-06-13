@@ -10,9 +10,7 @@ public class PlayerController : MonoBehaviour
     private float _rotateSpeed = 500f;
     private Vector3 _input;
 
-    // Extension stuff for iso specific movement
-    private Matrix4x4 _isoMatrix = Matrix4x4.Rotate(Quaternion.Euler(0, 45, 0));
-    public Vector3 ToIso(Vector3 input) => _isoMatrix.MultiplyPoint3x4(input);
+    private bool IsMouseOverGameWindow { get { return !(0 > Input.mousePosition.x || 0 > Input.mousePosition.y || Screen.width < Input.mousePosition.x || Screen.height < Input.mousePosition.y); } }
 
     // Update is called once per frame
     void Update()
@@ -33,18 +31,41 @@ public class PlayerController : MonoBehaviour
 
     void Move()
     {
-        _rb.MovePosition(transform.position + ToIso(_input) * _speed * Time.deltaTime);
+        _rb.MovePosition(transform.position + _input.normalized.ToIso() * _speed * Time.deltaTime);
     }
 
     void Rotate()
     {
-        if (_input == Vector3.zero) return;
 
-        Vector3 movementDirection = ToIso(_input);
-        movementDirection.Normalize();
+        if (IsMouseOverGameWindow)
+        {
+            RaycastHit hit;
 
-        Quaternion toRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, _rotateSpeed * Time.deltaTime);
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            if (Physics.Raycast(ray, out hit))
+            {
+                transform.LookAt(new Vector3(hit.point.x, transform.position.y, hit.point.z));
+            }
+        }
+        else
+        {
+            // Keyboard controls rotation if no mouse present
+
+            if (_input == Vector3.zero) return;
+
+            Vector3 movementDirection = _input.ToIso();
+            movementDirection.Normalize();
+
+            Quaternion toRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, _rotateSpeed * Time.deltaTime);
+        }
     }
+}
+
+public static class Helpers
+{
+    private static Matrix4x4 _isoMatrix = Matrix4x4.Rotate(Quaternion.Euler(0, 45, 0));
+    public static Vector3 ToIso(this Vector3 input) => _isoMatrix.MultiplyPoint3x4(input);
 }
 
