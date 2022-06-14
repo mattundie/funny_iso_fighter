@@ -42,22 +42,6 @@ public class PlayerController : MonoBehaviour
 
     void Rotate() {
 
-        /*if (IsMouseOverGameWindow)
-        {
-            RaycastHit hit;
-
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            if (Physics.Raycast(ray, out hit))
-            {
-                Vector3 target = new Vector3(hit.point.x, transform.position.y, hit.point.z);
-                Vector3 targetDirection = (target - transform.position).normalized;
-                Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
-
-                transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, _rotateSpeed * Time.deltaTime);
-            }
-        }*/
-
         if (_input == Vector3.zero) {
             _isMoving = false;
             return;
@@ -74,6 +58,27 @@ public class PlayerController : MonoBehaviour
 
     void Animate() {
         GetComponent<Animator>().SetBool("moving", _isMoving);
+
+        if (Input.GetKeyDown(KeyCode.LeftShift)) {
+            GetComponent<Animator>().SetTrigger("slide");
+        }
+
+
+        /*if (IsMouseOverGameWindow)
+        {
+            RaycastHit hit;
+
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            if (Physics.Raycast(ray, out hit))
+            {
+                Vector3 target = new Vector3(hit.point.x, transform.position.y, hit.point.z);
+                Vector3 targetDirection = (target - transform.position).normalized;
+                Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, _rotateSpeed * Time.deltaTime);
+            }
+        }*/
     }
 }
 
