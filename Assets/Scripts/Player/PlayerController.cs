@@ -4,17 +4,23 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-
+    [Header("Components")]
     [SerializeField] private Rigidbody _rb;
-    [SerializeField] private float _speed = 6;
+    [SerializeField] private Transform _mouseTarget;
+
+    [Header("Settings")]
+    [SerializeField] private float _moveSpeed = 6;
+    [SerializeField] private float _slideSpeed = 5;
     [SerializeField] private float _rotateSpeed = 500f;
     [SerializeField] private bool _isMoving;
+    [SerializeField] private bool _isSliding;
     private Vector3 _input;
 
     private bool IsMouseOverGameWindow { get { return !(0 > Input.mousePosition.x || 0 > Input.mousePosition.y || Screen.width < Input.mousePosition.x || Screen.height < Input.mousePosition.y); } }
 
     private void Start() {
         _isMoving = false;
+        _isSliding = false;
     }
 
     // Update is called once per frame
@@ -23,6 +29,7 @@ public class PlayerController : MonoBehaviour
         GatherInput();
         Rotate();
         Animate();
+        Slide();
     }
 
     private void FixedUpdate()
@@ -37,7 +44,26 @@ public class PlayerController : MonoBehaviour
 
     void Move()
     {
-        _rb.MovePosition(transform.position + _input.normalized.ToIso() * _speed * Time.deltaTime);
+        if (_isSliding) return;
+
+        _rb.MovePosition(transform.position + _input.normalized.ToIso() * _moveSpeed * Time.deltaTime);
+    }
+
+    void Slide()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftShift) && !_isSliding)
+        {
+            GetComponent<Animator>().SetTrigger("slide");
+            _isSliding = true;
+
+            Vector3 boostVector = transform.forward * _slideSpeed;
+            _rb.velocity = _rb.velocity + boostVector;
+        }
+
+        if (!GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Slide"))
+        {
+            _isSliding = false;
+        }
     }
 
     void Rotate() {
@@ -59,12 +85,8 @@ public class PlayerController : MonoBehaviour
     void Animate() {
         GetComponent<Animator>().SetBool("moving", _isMoving);
 
-        if (Input.GetKeyDown(KeyCode.LeftShift)) {
-            GetComponent<Animator>().SetTrigger("slide");
-        }
-
-
-        /*if (IsMouseOverGameWindow)
+        // Move head to follow mouse cursor
+        if (IsMouseOverGameWindow)
         {
             RaycastHit hit;
 
@@ -72,13 +94,9 @@ public class PlayerController : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit))
             {
-                Vector3 target = new Vector3(hit.point.x, transform.position.y, hit.point.z);
-                Vector3 targetDirection = (target - transform.position).normalized;
-                Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
-
-                transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, _rotateSpeed * Time.deltaTime);
+                _mouseTarget.position = new Vector3(hit.point.x, transform.position.y + 0.5f, hit.point.z);
             }
-        }*/
+        }
     }
 }
 
