@@ -30,7 +30,7 @@ public class PlayerObjectController : NetworkBehaviour
     public override void OnStartAuthority()
     {
         CmdSetPlayerName(SteamFriends.GetPersonaName().ToString());
-        gameObject.name = "LocalPlayer";
+        gameObject.tag = "LocalPlayer";
         LobbyController.Instance.FindLocalPlayer();
         LobbyController.Instance.UpdateLobbyName();
     }
@@ -66,7 +66,6 @@ public class PlayerObjectController : NetworkBehaviour
         {
             CmdSetPlayerReady();
         }
-
     }
 
     public void PlayerReadyUpdate(bool oldValue, bool newValue)
