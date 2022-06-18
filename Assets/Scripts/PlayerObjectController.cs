@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Mirror;
 using Steamworks;
 
@@ -27,6 +28,12 @@ public class PlayerObjectController : NetworkBehaviour
         }
     }
 
+    #region Start Functions
+    private void Start()
+    {
+        DontDestroyOnLoad(this.gameObject);
+    }
+
     public override void OnStartAuthority()
     {
         CmdSetPlayerName(SteamFriends.GetPersonaName().ToString());
@@ -38,16 +45,24 @@ public class PlayerObjectController : NetworkBehaviour
     public override void OnStartClient()
     {
         Manager.GamePlayers.Add(this);
-        LobbyController.Instance.UpdateLobbyName();
-        LobbyController.Instance.UpdatePlayerList();
+
+        if (SceneManager.GetActiveScene().name == "Lobby")
+        {
+            LobbyController.Instance.UpdateLobbyName();
+            LobbyController.Instance.UpdatePlayerList();
+        }
     }
 
     public override void OnStopClient()
     {
         Manager.GamePlayers.Remove(this);
-        LobbyController.Instance.UpdatePlayerList();
-    }
 
+        if(SceneManager.GetActiveScene().name == "Lobby")
+            LobbyController.Instance.UpdatePlayerList();
+    }
+    #endregion
+
+    #region Commands
     [Command]
     private void CmdSetPlayerName(string playerName)
     {
@@ -62,11 +77,22 @@ public class PlayerObjectController : NetworkBehaviour
 
     public void ChangeReady()
     {
-        if (hasAuthority)
-        {
+        if (hasAuthority)   // If local player
             CmdSetPlayerReady();
-        }
     }
+
+    [Command]
+    public void CmdCanStartGame(string SceneName)
+    {
+        manager.StartGame(SceneName);
+    }
+
+    public void CanStartGame(string SceneName)
+    {
+        if (hasAuthority)   // If local player
+            this.CmdCanStartGame(SceneName);
+    }
+    #endregion
 
     public void PlayerReadyUpdate(bool oldValue, bool newValue)
     {
@@ -91,4 +117,8 @@ public class PlayerObjectController : NetworkBehaviour
             LobbyController.Instance.UpdatePlayerList();
         }
     }
+
+
+
+
 }

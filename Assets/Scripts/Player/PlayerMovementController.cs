@@ -1,12 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
+using System.Linq;
+using UnityEngine.SceneManagement;
 
-public class PlayerController : MonoBehaviour
+public class PlayerMovementController : NetworkBehaviour
 {
     [Header("Components")]
     [SerializeField] private Rigidbody _rb;
     [SerializeField] private Transform _mouseTarget;
+    [SerializeField] private GameObject _playerModel;
 
     [Header("Settings")]
     [SerializeField] private float _moveSpeed = 6;
@@ -14,27 +18,57 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _rotateSpeed = 500f;
     [SerializeField] private bool _isMoving;
     [SerializeField] private bool _isSliding;
+    [SerializeField] private string[] EnabledScenes = { "Game" };
     private Vector3 _input;
+    private bool _enabled;
 
     private bool IsMouseOverGameWindow { get { return !(0 > Input.mousePosition.x || 0 > Input.mousePosition.y || Screen.width < Input.mousePosition.x || Screen.height < Input.mousePosition.y); } }
 
     private void Start() {
         _isMoving = false;
         _isSliding = false;
+        _enabled = false;
+        _playerModel.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
-        GatherInput();
-        Rotate();
-        Animate();
-        Slide();
+        ValidateMovementPermissions();
+        
+        if(!_enabled) { return; }
+
+        if (hasAuthority)
+        {
+            GatherInput();
+            Rotate();
+            Animate();
+            Slide();
+        }
     }
 
     private void FixedUpdate()
     {
-        Move();
+        if(hasAuthority)
+            Move();
+    }
+
+    void Reposition(Vector3 location)
+    {
+        transform.position = location;
+    }
+
+    void ValidateMovementPermissions()
+    {
+        if (EnabledScenes.Contains(SceneManager.GetActiveScene().name))
+        {
+            if (!_enabled)
+            {
+                Reposition(new Vector3(Random.Range(-8, 8), 0.8f, Random.Range(-5, 5)));
+                _playerModel.SetActive(true);
+                _enabled = true;
+            }
+        }
     }
 
     void GatherInput()
@@ -42,6 +76,7 @@ public class PlayerController : MonoBehaviour
         _input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
     }
 
+    #region Movement Functions
     void Move()
     {
         if (_isSliding) return;
@@ -81,7 +116,9 @@ public class PlayerController : MonoBehaviour
         Quaternion toRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, _rotateSpeed * Time.deltaTime);
     }
+    #endregion
 
+    #region Animation
     void Animate() {
         GetComponent<Animator>().SetBool("moving", _isMoving);
 
@@ -98,6 +135,7 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+    #endregion
 }
 
 public static class Helpers

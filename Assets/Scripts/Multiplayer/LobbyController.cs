@@ -114,6 +114,13 @@ public class LobbyController : MonoBehaviour
         LobbyNameText.text = SteamMatchmaking.GetLobbyData(new CSteamID(CurrentLobbyId), "name");
     }
 
+    public void FindLocalPlayer()
+    {
+        LocalPlayerObject = GameObject.FindGameObjectWithTag("LocalPlayer");
+        LocalPlayerController = LocalPlayerObject.GetComponent<PlayerObjectController>();
+    }
+
+    #region Player Update Functions
     public void UpdatePlayerList()
     {
         if (!PlayerItemCreated) { CreateHostPlayerItem(); }
@@ -123,12 +130,6 @@ public class LobbyController : MonoBehaviour
         if (PlayerListItems.Count > Manager.GamePlayers.Count) { RemovePlayerItem(); }
 
         if (PlayerListItems.Count == Manager.GamePlayers.Count) { UpdatePlayerItem(); }
-    }
-
-    public void FindLocalPlayer()
-    {
-        LocalPlayerObject = GameObject.FindGameObjectWithTag("LocalPlayer");
-        LocalPlayerController = LocalPlayerObject.GetComponent<PlayerObjectController>();
     }
 
     public void CreateHostPlayerItem()
@@ -221,5 +222,12 @@ public class LobbyController : MonoBehaviour
                 objToRemove = null;
             }
         }
+    }
+
+    #endregion
+
+    public void StartGame(string SceneName)
+    {
+        LocalPlayerController.CanStartGame(SceneName);
     }
 }
