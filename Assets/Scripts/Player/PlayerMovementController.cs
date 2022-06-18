@@ -18,10 +18,14 @@ public class PlayerMovementController : NetworkBehaviour
     [SerializeField] private float _moveSpeed = 6;
     [SerializeField] private float _slideSpeed = 5;
     [SerializeField] private float _rotateSpeed = 500f;
+    [SerializeField] private string[] EnabledScenes = { "Game" };
+
+    [Header("Monitored Data")]
     [SerializeField] private bool _isMoving;
     [SerializeField] private bool _isSliding;
-    [SerializeField] private string[] EnabledScenes = { "Game" };
-    private Vector3 _input;
+    [SerializeField] private bool _isAttacking;
+
+    private Vector3 _buttonInput;
     private bool _enabled;
 
     private bool IsMouseOverGameWindow { get { return !(0 > Input.mousePosition.x || 0 > Input.mousePosition.y || Screen.width < Input.mousePosition.x || Screen.height < Input.mousePosition.y); } }
@@ -48,6 +52,7 @@ public class PlayerMovementController : NetworkBehaviour
             Rotate();
             Animate();
             Slide();
+            Attack();
         }
     }
 
@@ -77,15 +82,25 @@ public class PlayerMovementController : NetworkBehaviour
 
     void GatherInput()
     {
-        _input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
+        _buttonInput = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
     }
 
     #region Movement Functions
     void Move()
     {
-        if (_isSliding) return;
+        float modifiedSpeed = _moveSpeed;
 
-        _rb.MovePosition(transform.position + _input.normalized.ToIso() * _moveSpeed * Time.deltaTime);
+        if (_isAttacking)
+            modifiedSpeed = _moveSpeed * 0.25f;
+
+        if(_buttonInput == Vector3.zero)
+        {
+            _isMoving = false;
+            return;
+        }
+
+        _isMoving = true;
+        _rb.MovePosition(transform.position + _buttonInput.normalized.ToIso() * modifiedSpeed * Time.deltaTime);
     }
 
     void Slide()
@@ -93,32 +108,46 @@ public class PlayerMovementController : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.LeftShift) && !_isSliding)
         {
             GetComponent<Animator>().SetTrigger("slide");
-            _isSliding = true;
 
             Vector3 boostVector = transform.forward * _slideSpeed;
             _rb.velocity = _rb.velocity + boostVector;
         }
 
-        if (!GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Slide"))
+        if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Slide"))
         {
-            _isSliding = false;
+            _isSliding = true;
         }
+        else
+            _isSliding = false;
     }
 
     void Rotate() {
 
-        if (_input == Vector3.zero) {
-            _isMoving = false;
-            return;
-        }
+        if (_buttonInput == Vector3.zero) return;
 
-        _isMoving = true;
-
-        Vector3 movementDirection = _input.ToIso();
+        Vector3 movementDirection = _buttonInput.ToIso();
         movementDirection.Normalize();
 
         Quaternion toRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, _rotateSpeed * Time.deltaTime);
+    }
+
+    void Attack()
+    {
+        if (_isSliding) return;
+
+        if (Input.GetKeyDown(KeyCode.Mouse0) && !_isAttacking)
+        {
+            GetComponent<Animator>().SetTrigger("punch");
+            _rb.velocity = _rb.velocity * 0.5f;
+        }
+
+        if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Punch"))
+        {
+            _isAttacking = true;
+        }
+        else
+            _isAttacking = false;
     }
     #endregion
 

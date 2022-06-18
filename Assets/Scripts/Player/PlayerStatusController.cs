@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Mirror;
 using Steamworks;
 
@@ -9,6 +10,9 @@ public class PlayerStatusController : NetworkBehaviour
     #region Components
     [Header("Components")]
     public Transform HealthBar;
+    public Image HealthBarIcon;
+    public Sprite HealthBarHappy;
+    public Sprite HealthBarSad;
     #endregion
 
     #region Status Data
@@ -29,11 +33,28 @@ public class PlayerStatusController : NetworkBehaviour
         Health = MaxHealth;
     }
 
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.PageUp))
+            CmdModifyHealth(Health + 5);
+        if (Input.GetKeyDown(KeyCode.PageDown))
+            CmdModifyHealth(Health - 5);
+    }
+
     private void FixedUpdate()
     {
-        if (Input.GetKey(KeyCode.DownArrow))
-            if (hasAuthority)
-                this.CmdModifyHealth(Health - 0.1f);
+        if (Health < 20)
+        {
+            HealthBar.gameObject.GetComponent<Image>().color = Color.red;
+            if (HealthBarIcon.sprite != HealthBarSad)
+                HealthBarIcon.sprite = HealthBarSad;
+        }
+        else if (Health >= 20)
+        {
+            HealthBar.gameObject.GetComponent<Image>().color = Color.green;
+            if (HealthBarIcon.sprite != HealthBarHappy)
+                HealthBarIcon.sprite = HealthBarHappy;
+        }
     }
 
 
@@ -41,8 +62,12 @@ public class PlayerStatusController : NetworkBehaviour
     [Command]
     private void CmdModifyHealth(float newHealth)
     {
-        if(Health >= 0 && Health < MaxHealth)
+        if (newHealth >= 0 && newHealth <= MaxHealth)
             this.HealthChanged(this.Health, newHealth);
+        else if (newHealth > MaxHealth)
+            this.HealthChanged(this.Health, MaxHealth);
+        else if (newHealth < 0)
+            this.HealthChanged(this.Health, 0);
     }
     #endregion
 
