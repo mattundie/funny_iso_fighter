@@ -75,6 +75,7 @@ public class PlayerMovementController : NetworkBehaviour
             {
                 Reposition(new Vector3(Random.Range(-5, 5), 2f, Random.Range(-5, 5)));
                 _playerModel.SetActive(true);
+                this._rb.isKinematic = false;
                 _enabled = true;
             }
         }
