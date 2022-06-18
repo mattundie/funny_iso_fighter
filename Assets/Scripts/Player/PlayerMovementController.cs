@@ -11,6 +11,7 @@ public class PlayerMovementController : NetworkBehaviour
     [SerializeField] private Rigidbody _rb;
     [SerializeField] private Transform _mouseTarget;
     [SerializeField] private GameObject _playerModel;
+    [SerializeField] private GameObject _playerRigging;
 
     [Header("Settings")]
     [SerializeField] private float _moveSpeed = 6;
@@ -29,6 +30,7 @@ public class PlayerMovementController : NetworkBehaviour
         _isSliding = false;
         _enabled = false;
         _playerModel.SetActive(false);
+        _playerRigging.SetActive(false);
     }
 
     // Update is called once per frame
@@ -44,6 +46,9 @@ public class PlayerMovementController : NetworkBehaviour
             Rotate();
             Animate();
             Slide();
+
+            if (_playerRigging.activeSelf == false)
+                _playerRigging.SetActive(true);
         }
     }
 
@@ -123,7 +128,7 @@ public class PlayerMovementController : NetworkBehaviour
         GetComponent<Animator>().SetBool("moving", _isMoving);
 
         // Move head to follow mouse cursor
-        if (hasAuthority)
+        if (IsMouseOverGameWindow && hasAuthority)
         {
             RaycastHit hit;
 

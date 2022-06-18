@@ -189,6 +189,7 @@ MonoBehaviour:
   _rb: {fileID: 5790784687533278997}
   _mouseTarget: {fileID: 5602458640155785068}
   _playerModel: {fileID: 9035382240577126645}
+  _playerRigging: {fileID: 5602458640678461267}
   _moveSpeed: 2.5
   _slideSpeed: 5
   _rotateSpeed: 300
