@@ -123,7 +123,7 @@ public class PlayerMovementController : NetworkBehaviour
         GetComponent<Animator>().SetBool("moving", _isMoving);
 
         // Move head to follow mouse cursor
-        if (IsMouseOverGameWindow && hasAuthority)
+        if (hasAuthority)
         {
             RaycastHit hit;
 
