@@ -4,6 +4,7 @@ using UnityEngine;
 using Mirror;
 using System.Linq;
 using UnityEngine.SceneManagement;
+using UnityEngine.Animations.Rigging;
 
 public class PlayerMovementController : NetworkBehaviour
 {
@@ -30,7 +31,8 @@ public class PlayerMovementController : NetworkBehaviour
         _isSliding = false;
         _enabled = false;
         _playerModel.SetActive(false);
-        _playerRigging.SetActive(false);
+
+        if (hasAuthority) { _playerRigging.GetComponent<Rig>().weight = 1; }
     }
 
     // Update is called once per frame
@@ -46,9 +48,6 @@ public class PlayerMovementController : NetworkBehaviour
             Rotate();
             Animate();
             Slide();
-
-            if (_playerRigging.activeSelf == false)
-                _playerRigging.SetActive(true);
         }
     }
 
