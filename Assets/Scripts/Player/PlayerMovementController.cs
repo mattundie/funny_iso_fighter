@@ -69,7 +69,7 @@ public class PlayerMovementController : NetworkBehaviour
         {
             if (!_enabled)
             {
-                Reposition(new Vector3(Random.Range(-8, 8), 0.8f, Random.Range(-5, 5)));
+                Reposition(new Vector3(Random.Range(-5, 5), 2f, Random.Range(-5, 5)));
                 _playerModel.SetActive(true);
                 _enabled = true;
             }
