@@ -198,7 +198,8 @@ public class LobbyController : MonoBehaviour
             }
         }
 
-        CheckIfAllReady();
+        if(LocalPlayerController)
+            CheckIfAllReady();
     }
 
     public void RemovePlayerItem()

@@ -92,7 +92,7 @@ public class PlayerMovementController : NetworkBehaviour
         float modifiedSpeed = _moveSpeed;
 
         if (_isAttacking)
-            modifiedSpeed = _moveSpeed * 0.25f;
+            modifiedSpeed = _moveSpeed * 0.35f;
 
         if(_buttonInput == Vector3.zero)
         {

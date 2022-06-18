@@ -43,6 +43,15 @@ public class PlayerStatusController : NetworkBehaviour
 
     private void FixedUpdate()
     {
+        if (isClient)
+        {
+            PopulateHealthUI();
+        }
+    }
+
+    [Client]
+    private void PopulateHealthUI()
+    {
         if (Health < 20)
         {
             HealthBar.gameObject.GetComponent<Image>().color = Color.red;
