@@ -14,12 +14,27 @@ public class PlayerListItem : MonoBehaviour
 
     public TMP_Text PlayerNameText;
     public RawImage PlayerIcon;
+    public RawImage PlayerReadyIcon;
+    public bool _ready;
 
     protected Callback<AvatarImageLoaded_t> ImageLoaded;
+
 
     private void Start()
     {
         ImageLoaded = Callback<AvatarImageLoaded_t>.Create(OnImageLoaded);
+    }
+
+    public void ChangeReadyStatus()
+    {
+        if (_ready)
+        {
+            PlayerReadyIcon.gameObject.SetActive(true);
+        }
+        else
+        {
+            PlayerReadyIcon.gameObject.SetActive(false);
+        }
     }
 
     private void OnImageLoaded(AvatarImageLoaded_t callback)
@@ -37,6 +52,7 @@ public class PlayerListItem : MonoBehaviour
     public void PopulateUI()
     {
         PlayerNameText.text = _playerName;
+        ChangeReadyStatus();
         if(!_avatarReceived) { GetPlayerIcon(); }
     }
 
