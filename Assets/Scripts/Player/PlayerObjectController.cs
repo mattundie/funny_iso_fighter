@@ -38,8 +38,12 @@ public class PlayerObjectController : NetworkBehaviour
     {
         CmdSetPlayerName(SteamFriends.GetPersonaName().ToString());
         gameObject.tag = "LocalPlayer";
-        LobbyController.Instance.FindLocalPlayer();
-        LobbyController.Instance.UpdateLobbyName();
+
+        if (SceneManager.GetActiveScene().name == "Lobby")
+        {
+            LobbyController.Instance.FindLocalPlayer();
+            LobbyController.Instance.UpdateLobbyName();
+        }
     }
 
     public override void OnStartClient()

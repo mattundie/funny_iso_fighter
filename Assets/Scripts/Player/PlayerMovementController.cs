@@ -33,6 +33,7 @@ public class PlayerMovementController : NetworkBehaviour
     private void Start() {
         _isMoving = false;
         _isSliding = false;
+        _isAttacking = false;
         _enabled = false;
         _playerModel.SetActive(false);
 
@@ -141,6 +142,7 @@ public class PlayerMovementController : NetworkBehaviour
         {
             GetComponent<Animator>().SetTrigger("punch");
             _rb.velocity = _rb.velocity * 0.5f;
+            _isAttacking = true;
         }
 
         if (GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Punch"))
