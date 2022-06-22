@@ -6,16 +6,20 @@ using System.Linq;
 using UnityEngine.SceneManagement;
 using UnityEngine.Animations.Rigging;
 using RootMotion.Dynamics;
+using RootMotion.FinalIK;
 using System;
 
-public class PlayerMovementNew : MonoBehaviour
+public class PlayerMovementNew : NetworkBehaviour
 {
     [Header("Components")]
     [SerializeField] private Rigidbody _rb;
     [SerializeField] private Animator _animator;
+    [SerializeField] private GameObject _playerModel;
     [SerializeField] private BehaviourPuppet _puppet;
+    [SerializeField] private Transform _mouseTarget;
     [SerializeField] private Transform _raycastCenter;
     [SerializeField] private LayerMask _raycastLayers;
+    [SerializeField] private ExplosiveContact[] _explosiveContacts;
 
     [Header("Move Settings")]
     [SerializeField] private float _maxSpeed = 8f;
@@ -32,36 +36,56 @@ public class PlayerMovementNew : MonoBehaviour
     [SerializeField] private float _rideSpringDamper = 50f;
 
     [Header("Jump Settings")]
-    [SerializeField] private float _initialJumpForceMultiplier = 750f;
-    [SerializeField] private float _continualJumpForceMultiplier = 0.1f;
-    [SerializeField] private float _jumpTime = 0.175f;
+    [SerializeField] private float _initialJumpForceMultiplier = 6f;
+    [SerializeField] private float _continualJumpForceMultiplier = 1.25f;
+    [SerializeField] private float _jumpTime = 0.2f;
     [SerializeField] private float _jumpTimeCounter = 0f;
-    [SerializeField] private float _coyoteTime = 0.15f;
+    [SerializeField] private float _coyoteTime = 0.2f;
     [SerializeField] private float _coyoteTimeCounter = 0f;
-    [SerializeField] private float _jumpBufferTime = 0.2f;
+    [SerializeField] private float _jumpBufferTime = 0.4f;
     [SerializeField] private float _jumpBufferTimeCounter = 0f;
     [SerializeField] private bool _jumpWasPressedLastFrame = false;
 
     [Header("Monitored Data")]
     [SerializeField] private bool _isMoving = false;
     [SerializeField] private bool _isJumping = false;
+    [SerializeField] private bool _isActing = false;
     [SerializeField] private bool _grounded;
+    [SerializeField] private bool _enabled;
+    [SerializeField] private ActionStates _currentActionState;
+
+    private enum ActionStates
+    {
+        melee,
+        shoot
+    }
 
     private Vector3 _buttonInput;
     private RaycastHit _raycastHit;
     private bool _pressedJump;
     private float _pressedJumpTimer;
+    private bool _pressedAction;
 
     private bool IsMouseOverGameWindow { get { return !(0 > Input.mousePosition.x || 0 > Input.mousePosition.y || Screen.width < Input.mousePosition.x || Screen.height < Input.mousePosition.y); } }
 
     private void Start()
     {
+        _currentActionState = ActionStates.melee;
+        _playerModel.SetActive(false);
+        _rb.isKinematic = true;
+        _enabled = false;
 
+        if (!hasAuthority)
+            _rb.gameObject.GetComponent<AimIK>().enabled = false;
     }
 
     // Update is called once per frame
     void Update()
     {
+        CheckMovementPermissions();
+
+        if (!_enabled || !hasAuthority) { return; }
+
         GatherInput();
 
         if (_puppet.state == BehaviourPuppet.State.Puppet)
@@ -74,15 +98,41 @@ public class PlayerMovementNew : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!_enabled || !hasAuthority) { return; }
+
         Jump();
         Hover();
         Move();
+        Action();
+    }
+
+    private void CheckMovementPermissions()
+    {
+        if (!_enabled)
+        {
+            if (SceneManager.GetActiveScene().name.Contains("Game"))
+            {
+                _playerModel.SetActive(true);
+                _rb.isKinematic = false;
+                _enabled = true;
+            }
+        }
+        else
+        {
+            if (!SceneManager.GetActiveScene().name.Contains("Game"))
+            {
+                _playerModel.SetActive(false);
+                _rb.isKinematic = true;
+                _enabled = false;
+            }
+        }
     }
 
     void GatherInput()
     {
         _buttonInput = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
 
+        // Jumping
         if (Input.GetButtonDown("Jump"))
         {
             _pressedJump = true;
@@ -99,6 +149,16 @@ public class PlayerMovementNew : MonoBehaviour
         {
             _pressedJump = false;
             _pressedJumpTimer = 0f;
+        }
+
+        // Action
+        if (Input.GetMouseButtonDown(0))
+        {
+            _pressedAction = true;
+        }
+        else if (Input.GetMouseButtonUp(0))
+        {
+            _pressedAction = false;
         }
     }
 
@@ -207,7 +267,7 @@ public class PlayerMovementNew : MonoBehaviour
         movementDirection.Normalize();
 
         Quaternion toRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, _rotateSpeed * Time.deltaTime);
+        _rb.transform.rotation = Quaternion.RotateTowards(_rb.transform.rotation, toRotation, _rotateSpeed * Time.deltaTime);
     }
 
     void Jump()
@@ -217,6 +277,9 @@ public class PlayerMovementNew : MonoBehaviour
         SetJumpTimeCounter();
         SetCoyoteTimeCounter();
         SetJumpBufferCounter();
+
+        if (_puppet.state != BehaviourPuppet.State.Puppet)
+            return;
 
         if (_pressedJump && _jumpBufferTimeCounter > 0.0f && !_isJumping && _coyoteTimeCounter > 0.0f)
         {
@@ -239,6 +302,29 @@ public class PlayerMovementNew : MonoBehaviour
         }
     }
 
+    void Action()
+    {
+        if (_puppet.state != BehaviourPuppet.State.Puppet)
+            return;
+
+        // Begin Action
+        if (_pressedAction)
+        {
+            if (!_isActing && _currentActionState == ActionStates.melee)
+            {
+                float duration = 1f;
+                _isActing = true;
+                _animator.SetTrigger("slap");
+
+                foreach (var contact in _explosiveContacts)
+                    contact._enabled = true;
+
+                Invoke("ActionReset", duration);
+                Invoke("ExplosiveContactDisable", duration);
+            }
+        }
+    }
+
     #endregion
 
     #region Animation
@@ -249,10 +335,43 @@ public class PlayerMovementNew : MonoBehaviour
 
         float clampedVelocity = _rb.velocity.magnitude / _maxSpeed;
         _animator.SetFloat("speed", clampedVelocity);
+
+        if (IsMouseOverGameWindow)
+        {
+            RaycastHit hit;
+
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            if (Physics.Raycast(ray, out hit, _raycastLayers))
+            {
+                _mouseTarget.position = new Vector3(hit.point.x, _rb.transform.position.y, hit.point.z);
+
+                float dist = (_mouseTarget.transform.position - _rb.transform.position).magnitude;
+                if (dist <= 1 && dist > 0)
+                {
+                    _rb.gameObject.GetComponent<AimIK>().solver.IKPositionWeight = dist;
+                }
+                else
+                {
+                    _rb.gameObject.GetComponent<AimIK>().solver.IKPositionWeight = 1;
+                }
+            }
+        }
     }
     #endregion
 
     #region Helper Functions
+    private void ActionReset()
+    {
+        _isActing = false;
+    }
+
+    private void ExplosiveContactDisable()
+    {
+        foreach (var contact in _explosiveContacts)
+            contact._enabled = false;
+    }
+
     private void SetJumpTimeCounter()
     {
         if(_isJumping && !_grounded)

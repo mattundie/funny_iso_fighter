@@ -37,7 +37,8 @@ public class PlayerObjectController : NetworkBehaviour
     public override void OnStartAuthority()
     {
         CmdSetPlayerName(SteamFriends.GetPersonaName().ToString());
-        gameObject.tag = "LocalPlayer";
+
+        gameObject.transform.tag = "LocalPlayer";
 
         if (SceneManager.GetActiveScene().name == "Lobby")
         {
