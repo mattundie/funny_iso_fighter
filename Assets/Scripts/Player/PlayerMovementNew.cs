@@ -81,7 +81,14 @@ public class PlayerMovementNew : NetworkBehaviour
         _enabled = false;
 
         if (!hasAuthority)
+        {
             _rb.gameObject.GetComponent<AimIK>().enabled = false;
+            NetworkTransformChild[] childTransforms = GetComponents<NetworkTransformChild>();
+            foreach(var child in childTransforms)
+            {
+                child.clientAuthority = false;
+            }
+        }
     }
 
     // Update is called once per frame
