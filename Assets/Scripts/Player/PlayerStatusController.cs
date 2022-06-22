@@ -66,6 +66,8 @@ public class PlayerStatusController : NetworkBehaviour
             PopulateHealthUI();
         }
 
+        if(!hasAuthority) { return; }
+
         if (GetComponent<PlayerMovementNew>()._rb.transform.position.magnitude > 120f)
         {
             CmdPlayerDeath();
@@ -134,7 +136,7 @@ public class PlayerStatusController : NetworkBehaviour
     {
         if (isServer)
         {
-            if (newValue)
+            if (newValue == true)
             {
                 this._deaths += 1;
                 this._dead = newValue;
@@ -148,7 +150,7 @@ public class PlayerStatusController : NetworkBehaviour
         
         if(isClient)
         {
-            if (newValue)
+            if (newValue == true)
                 this.GetComponent<PlayerMovementNew>().UpdatePlayerState(PlayerState.Dead);
             else
                 this.GetComponent<PlayerMovementNew>().UpdatePlayerState(PlayerState.Respawn);
