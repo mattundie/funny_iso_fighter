@@ -75,7 +75,6 @@ public class PlayerMovementNew : NetworkBehaviour
 
         GetComponent<PlayerStatusController>().HealthBar.parent.gameObject.SetActive(false);
         
-        _puppet.GetComponent<PuppetMaster>().enabled = false;
         _playerModel.SetActive(false);
         _rb.isKinematic = true;
         _enabled = false;
@@ -122,9 +121,6 @@ public class PlayerMovementNew : NetworkBehaviour
                 _rb.transform.position = spawnPos;
                 _puppet.transform.position = spawnPos;
 
-                if(hasAuthority)
-                    _puppet.GetComponent<PuppetMaster>().enabled = true;
-
                 GetComponent<PlayerStatusController>().HealthBar.parent.gameObject.SetActive(true);
 
                 _playerModel.SetActive(true);
@@ -136,10 +132,6 @@ public class PlayerMovementNew : NetworkBehaviour
         {
             if (!SceneManager.GetActiveScene().name.Contains("Game"))
             {
-
-                if (hasAuthority)
-                    _puppet.GetComponent<PuppetMaster>().enabled = false;
-
                 GetComponent<PlayerStatusController>().HealthBar.parent.gameObject.SetActive(false);
 
                 _playerModel.SetActive(false);
