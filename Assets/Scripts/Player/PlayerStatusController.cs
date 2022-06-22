@@ -51,6 +51,9 @@ public class PlayerStatusController : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.R))
             CmdPlayerRespawn();
+
+        if (_health == 0 && !_dead)
+            CmdPlayerDeath();
     }
 
     private void FixedUpdate()
@@ -95,9 +98,6 @@ public class PlayerStatusController : NetworkBehaviour
             this.HealthChanged(this._health, _maxHealth);
         else if (newHealth < 0)
             this.HealthChanged(this._health, 0);
-
-        if (newHealth == 0)
-            CmdPlayerDeath();
     }
 
     [Command]
