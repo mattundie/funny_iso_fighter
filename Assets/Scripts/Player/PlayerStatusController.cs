@@ -18,9 +18,9 @@ public class PlayerStatusController : NetworkBehaviour
 
     #region Status Data
     [Header("Status Data")]
-    [SyncVar(hook = nameof(HealthChanged))] public float _health;
+    [SyncVar] public float _health;
     [SyncVar] public float _maxHealth = 100;
-    [SyncVar(hook = nameof(PlayerDeathEvent))] public bool _dead = false;
+    [SyncVar] public bool _dead = false;
     [SyncVar] public int _deaths;
     #endregion
 
@@ -44,19 +44,13 @@ public class PlayerStatusController : NetworkBehaviour
 
     private void Update()
     {
-        if (hasAuthority)
-        {
-            if (Input.GetKeyDown(KeyCode.PageUp))
-                CmdModifyHealth(_health + 5);
-            if (Input.GetKeyDown(KeyCode.PageDown))
-                CmdModifyHealth(_health - 5);
+        if (_health == 0 && !_dead)
+            PlayerDeath();
 
-            if (Input.GetKeyDown(KeyCode.R) && _dead)
-                CmdPlayerRespawn();
+        if (!hasAuthority) { return; }
 
-            if (_health == 0 && !_dead)
-                CmdPlayerDeath();
-        }
+        if (Input.GetKeyDown(KeyCode.R) && _dead)
+            CmdPlayerRespawn();
     }
 
     private void FixedUpdate()
@@ -68,9 +62,9 @@ public class PlayerStatusController : NetworkBehaviour
 
         if(!hasAuthority) { return; }
 
-        if (GetComponent<PlayerMovementNew>()._rb.transform.position.magnitude > 120f)
+        if (GetComponent<PlayerMovementNew>()._rb.transform.position.magnitude > 100f)
         {
-            CmdPlayerDeath();
+            PlayerDeath();
             CmdPlayerRespawn();
         }
     }
@@ -92,69 +86,74 @@ public class PlayerStatusController : NetworkBehaviour
         }
     }
 
+    private void ModifyHealth(float modifier)
+    {
+        if (!isServer) return;
+
+        _health += modifier;
+
+        if (_health >= 0 && _health <= _maxHealth)
+            RpcHealthChanged(_health);
+        else if (_health > _maxHealth)
+            RpcHealthChanged(_maxHealth);
+        else if (_health < 0)
+            RpcHealthChanged(0);
+    }
+
+    private void PlayerDeath()
+    {
+        if (!isServer) { return; }
+
+        _dead = true;
+        _deaths += 1;
+
+        RpcPlayerDeath();
+    }
+
+    #region ClientRpc Calls
+
+    [ClientRpc]
+    private void RpcHealthChanged(float newHealth)
+    {
+        this._health = newHealth;
+        _healthBarTarget = new Vector3((newHealth / _maxHealth), HealthBar.localScale.y, HealthBar.localScale.z);
+        HealthBar.localScale = _healthBarTarget;
+    }
+
+    [ClientRpc]
+    private void RpcPlayerDeath()
+    {
+      this.GetComponent<PlayerMovementNew>().UpdatePlayerState(PlayerState.Dead);
+    }
+
+    [ClientRpc]
+    private void RpcPlayerRespawn()
+    {
+        this.GetComponent<PlayerMovementNew>().UpdatePlayerState(PlayerState.Respawn);
+    }
+    #endregion
 
     #region Commands
-    [Command]
-    private void CmdModifyHealth(float newHealth)
-    {
-        if (newHealth >= 0 && newHealth <= _maxHealth)
-            this.HealthChanged(this._health, newHealth);
-        else if (newHealth > _maxHealth)
-            this.HealthChanged(this._health, _maxHealth);
-        else if (newHealth < 0)
-            this.HealthChanged(this._health, 0);
-    }
-
-    [Command]
-    private void CmdPlayerDeath()
-    {
-        PlayerDeathEvent(false, true);
-    }
 
     [Command]
     private void CmdPlayerRespawn()
     {
-        PlayerDeathEvent(true, false);
+        PlayerRespawnHook(true, false);
     }
+
     #endregion
 
     #region Hook Functions
-    private void HealthChanged(float oldValue, float newValue)
+
+    public void PlayerRespawnHook(bool oldValue, bool newValue)
     {
         if (isServer)
         {
-            this._health = newValue;
-        }
-        if (isClient)
-        {
-            _healthBarTarget = new Vector3((newValue / _maxHealth), HealthBar.localScale.y, HealthBar.localScale.z);
-            HealthBar.localScale = _healthBarTarget;
+            this._dead = newValue;
+            this._health = this._maxHealth;
+            RpcPlayerRespawn();
         }
     }
 
-    private void PlayerDeathEvent(bool oldValue, bool newValue)
-    {
-        if (isServer)
-        {
-            if (newValue == true)
-            {
-                this._deaths += 1;
-                this._dead = newValue;
-            }
-            else
-            {
-                this._health = this._maxHealth;
-                this._dead = newValue;
-            }
-        }
-        
-        if(isClient)
-        {
-            if (newValue == true)
-                this.GetComponent<PlayerMovementNew>().UpdatePlayerState(PlayerState.Dead);
-            else
-                this.GetComponent<PlayerMovementNew>().UpdatePlayerState(PlayerState.Respawn);
-        }
-    }
     #endregion
 }
