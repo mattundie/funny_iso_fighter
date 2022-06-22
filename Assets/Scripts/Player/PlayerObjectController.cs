@@ -38,7 +38,8 @@ public class PlayerObjectController : NetworkBehaviour
     {
         CmdSetPlayerName(SteamFriends.GetPersonaName().ToString());
 
-        gameObject.transform.tag = "LocalPlayer";
+        transform.tag = "LocalPlayer";
+        transform.Find("PlayerObject").tag = "LocalCameraTarget";
 
         if (SceneManager.GetActiveScene().name == "Lobby")
         {

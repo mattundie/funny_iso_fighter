@@ -18,7 +18,7 @@ public class CameraController : MonoBehaviour
     {
         if (!target)
         {
-            target = GameObject.FindGameObjectWithTag("LocalPlayer");
+            target = GameObject.FindGameObjectWithTag("LocalCameraTarget");
         }
         else
         {
