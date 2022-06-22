@@ -12,7 +12,7 @@ using System;
 public class PlayerMovementNew : NetworkBehaviour
 {
     [Header("Components")]
-    [SerializeField] private Rigidbody _rb;
+    [SerializeField] public Rigidbody _rb;
     [SerializeField] private Animator _animator;
     [SerializeField] private GameObject _playerModel;
     [SerializeField] private BehaviourPuppet _puppet;
