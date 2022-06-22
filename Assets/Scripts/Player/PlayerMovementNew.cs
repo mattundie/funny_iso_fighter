@@ -83,11 +83,6 @@ public class PlayerMovementNew : NetworkBehaviour
         if (!hasAuthority)
         {
             _rb.gameObject.GetComponent<AimIK>().enabled = false;
-            NetworkTransformChild[] childTransforms = GetComponents<NetworkTransformChild>();
-            foreach(var child in childTransforms)
-            {
-                child.clientAuthority = false;
-            }
         }
     }
 
