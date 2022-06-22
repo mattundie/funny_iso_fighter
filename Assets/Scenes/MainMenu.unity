@@ -2905,6 +2905,67 @@ Transform:
   m_Father: {fileID: 1009080911}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &160260093
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1849845769042258776, guid: 3ffb054348206c34ba406e98b68e3030, type: 3}
+      propertyPath: sceneId
+      value: 2015866802
+      objectReference: {fileID: 0}
+    - target: {fileID: 2743702733736927032, guid: 3ffb054348206c34ba406e98b68e3030, type: 3}
+      propertyPath: m_Name
+      value: PlayerObjectRoot
+      objectReference: {fileID: 0}
+    - target: {fileID: 2743702733736927039, guid: 3ffb054348206c34ba406e98b68e3030, type: 3}
+      propertyPath: m_RootOrder
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2743702733736927039, guid: 3ffb054348206c34ba406e98b68e3030, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.001
+      objectReference: {fileID: 0}
+    - target: {fileID: 2743702733736927039, guid: 3ffb054348206c34ba406e98b68e3030, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.061
+      objectReference: {fileID: 0}
+    - target: {fileID: 2743702733736927039, guid: 3ffb054348206c34ba406e98b68e3030, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.001
+      objectReference: {fileID: 0}
+    - target: {fileID: 2743702733736927039, guid: 3ffb054348206c34ba406e98b68e3030, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2743702733736927039, guid: 3ffb054348206c34ba406e98b68e3030, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2743702733736927039, guid: 3ffb054348206c34ba406e98b68e3030, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2743702733736927039, guid: 3ffb054348206c34ba406e98b68e3030, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2743702733736927039, guid: 3ffb054348206c34ba406e98b68e3030, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2743702733736927039, guid: 3ffb054348206c34ba406e98b68e3030, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2743702733736927039, guid: 3ffb054348206c34ba406e98b68e3030, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3ffb054348206c34ba406e98b68e3030, type: 3}
 --- !u!1 &170054799
 GameObject:
   m_ObjectHideFlags: 0
@@ -10382,6 +10443,46 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.35291553, y: 0.44163358, z: 0.21174933}
   m_Center: {x: 0.0000016199567, y: 0.18896079, z: 0.0009377301}
+--- !u!1 &512428836 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2743702733736927032, guid: 3ffb054348206c34ba406e98b68e3030, type: 3}
+  m_PrefabInstance: {fileID: 160260093}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &512428837
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 512428836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 734b48bea0b204338958ee3d885e11f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  clientAuthority: 0
+  sendInterval: 0.05
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 0
+  bufferTimeMultiplier: 1
+  bufferSizeLimit: 64
+  catchupThreshold: 4
+  catchupMultiplier: 0.1
+  onlySyncOnChange: 1
+  bufferResetMultiplier: 5
+  positionSensitivity: 0.01
+  rotationSensitivity: 0.01
+  scaleSensitivity: 0.01
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+  target: {fileID: 0}
 --- !u!1 &517056253
 GameObject:
   m_ObjectHideFlags: 0

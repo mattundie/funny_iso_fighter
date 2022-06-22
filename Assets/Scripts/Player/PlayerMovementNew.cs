@@ -76,6 +76,7 @@ public class PlayerMovementNew : NetworkBehaviour
         GetComponent<PlayerStatusController>().HealthBar.parent.gameObject.SetActive(false);
         
         _playerModel.SetActive(false);
+        _puppet.SetActive(false);
         _rb.isKinematic = true;
         _enabled = false;
 
@@ -123,8 +124,9 @@ public class PlayerMovementNew : NetworkBehaviour
 
                 GetComponent<PlayerStatusController>().HealthBar.parent.gameObject.SetActive(true);
 
-                _playerModel.SetActive(true);
                 _rb.isKinematic = false;
+                _playerModel.SetActive(true);
+                _puppet.SetActive(true);
                 _enabled = true;
             }
         }
@@ -134,8 +136,9 @@ public class PlayerMovementNew : NetworkBehaviour
             {
                 GetComponent<PlayerStatusController>().HealthBar.parent.gameObject.SetActive(false);
 
-                _playerModel.SetActive(false);
                 _rb.isKinematic = true;
+                _playerModel.SetActive(false);
+                _puppet.SetActive(false);
                 _enabled = false;
             }
         }
