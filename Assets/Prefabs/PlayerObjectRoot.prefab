@@ -3600,7 +3600,8 @@ MonoBehaviour:
   _rb: {fileID: 2743702733745852146}
   _animator: {fileID: 2743702733745852147}
   _playerModel: {fileID: 2743702732949538647}
-  _puppet: {fileID: 2743702733145590049}
+  _puppet: {fileID: 31566985451974703}
+  _puppetBehaviour: {fileID: 2743702733145590049}
   _mouseTarget: {fileID: 2743702733231422208}
   _raycastCenter: {fileID: 2743702732567089256}
   _raycastLayers:

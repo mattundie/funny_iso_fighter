@@ -40,6 +40,7 @@ public class PlayerObjectController : NetworkBehaviour
 
         transform.tag = "LocalPlayer";
         transform.Find("PlayerObject").tag = "LocalCameraTarget";
+        transform.Find("PuppetMaster").tag = "LocalRagdoll";
 
         if (SceneManager.GetActiveScene().name == "Lobby")
         {

@@ -15,7 +15,8 @@ public class PlayerMovementNew : NetworkBehaviour
     [SerializeField] public Rigidbody _rb;
     [SerializeField] private Animator _animator;
     [SerializeField] private GameObject _playerModel;
-    [SerializeField] private BehaviourPuppet _puppet;
+    [SerializeField] private GameObject _puppet;
+    [SerializeField] private BehaviourPuppet _puppetBehaviour;
     [SerializeField] private Transform _mouseTarget;
     [SerializeField] private Transform _raycastCenter;
     [SerializeField] private LayerMask _raycastLayers;
@@ -76,7 +77,10 @@ public class PlayerMovementNew : NetworkBehaviour
         _enabled = false;
 
         if (!hasAuthority)
+        {
             _rb.gameObject.GetComponent<AimIK>().enabled = false;
+            _puppet.GetComponent<PuppetMaster>().enabled = false;
+        }
     }
 
     // Update is called once per frame
@@ -88,7 +92,7 @@ public class PlayerMovementNew : NetworkBehaviour
 
         GatherInput();
 
-        if (_puppet.state == BehaviourPuppet.State.Puppet)
+        if (_puppetBehaviour.state == BehaviourPuppet.State.Puppet)
         {
             Rotate();
         }
@@ -172,7 +176,7 @@ public class PlayerMovementNew : NetworkBehaviour
         {
             _grounded = true;
 
-            if (_puppet.state != BehaviourPuppet.State.Puppet || _isJumping)
+            if (_puppetBehaviour.state != BehaviourPuppet.State.Puppet || _isJumping)
                 return;
 
             Vector3 vel = _rb.velocity;
@@ -215,7 +219,7 @@ public class PlayerMovementNew : NetworkBehaviour
         Vector3 m_GoalVel = _rb.velocity;
         Vector3 unitVel = m_GoalVel.normalized;
 
-        if(_puppet.state != BehaviourPuppet.State.Puppet)
+        if(_puppetBehaviour.state != BehaviourPuppet.State.Puppet)
         {
             _isMoving = false;
             return;
@@ -278,7 +282,7 @@ public class PlayerMovementNew : NetworkBehaviour
         SetCoyoteTimeCounter();
         SetJumpBufferCounter();
 
-        if (_puppet.state != BehaviourPuppet.State.Puppet)
+        if (_puppetBehaviour.state != BehaviourPuppet.State.Puppet)
             return;
 
         if (_pressedJump && _jumpBufferTimeCounter > 0.0f && !_isJumping && _coyoteTimeCounter > 0.0f)
@@ -304,7 +308,7 @@ public class PlayerMovementNew : NetworkBehaviour
 
     void Action()
     {
-        if (_puppet.state != BehaviourPuppet.State.Puppet)
+        if (_puppetBehaviour.state != BehaviourPuppet.State.Puppet)
             return;
 
         // Begin Action
