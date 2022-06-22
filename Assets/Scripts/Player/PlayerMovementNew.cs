@@ -72,15 +72,16 @@ public class PlayerMovementNew : NetworkBehaviour
     private void Start()
     {
         _currentActionState = ActionStates.melee;
+
+        GetComponent<PlayerStatusController>().HealthBar.parent.gameObject.SetActive(false);
+        
+        _puppet.GetComponent<PuppetMaster>().enabled = false;
         _playerModel.SetActive(false);
         _rb.isKinematic = true;
         _enabled = false;
 
         if (!hasAuthority)
-        {
             _rb.gameObject.GetComponent<AimIK>().enabled = false;
-            _puppet.GetComponent<PuppetMaster>().enabled = false;
-        }
     }
 
     // Update is called once per frame
@@ -110,12 +111,22 @@ public class PlayerMovementNew : NetworkBehaviour
         Action();
     }
 
-    private void CheckMovementPermissions()
+    public void CheckMovementPermissions()
     {
         if (!_enabled)
         {
             if (SceneManager.GetActiveScene().name.Contains("Game"))
             {
+                // Move player to spawn location
+                Vector3 spawnPos = new Vector3(UnityEngine.Random.Range(-3, 3), 2f, UnityEngine.Random.Range(-3, 3));
+                _rb.transform.position = spawnPos;
+                _puppet.transform.position = spawnPos;
+
+                if(hasAuthority)
+                    _puppet.GetComponent<PuppetMaster>().enabled = true;
+
+                GetComponent<PlayerStatusController>().HealthBar.parent.gameObject.SetActive(true);
+
                 _playerModel.SetActive(true);
                 _rb.isKinematic = false;
                 _enabled = true;
@@ -125,6 +136,12 @@ public class PlayerMovementNew : NetworkBehaviour
         {
             if (!SceneManager.GetActiveScene().name.Contains("Game"))
             {
+
+                if (hasAuthority)
+                    _puppet.GetComponent<PuppetMaster>().enabled = false;
+
+                GetComponent<PlayerStatusController>().HealthBar.parent.gameObject.SetActive(false);
+
                 _playerModel.SetActive(false);
                 _rb.isKinematic = true;
                 _enabled = false;

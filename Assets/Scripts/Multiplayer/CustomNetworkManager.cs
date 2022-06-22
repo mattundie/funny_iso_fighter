@@ -27,11 +27,12 @@ public class CustomNetworkManager : NetworkManager
 
     public void StartGame(string SceneName)
     {
+        ServerChangeScene(SceneName);
+
         foreach (PlayerObjectController player in GamePlayers)
         {
-            player.transform.position = new Vector3(Random.Range(-5, 5), 5f, Random.Range(-5, 5));
+            player.transform.position = new Vector3(Random.Range(-3, 3), 1f, Random.Range(-3, 3));
+            player.GetComponent<PlayerMovementNew>().CheckMovementPermissions();
         }
-
-        ServerChangeScene(SceneName);
     }
 }
