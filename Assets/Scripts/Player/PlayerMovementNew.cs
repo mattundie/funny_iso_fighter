@@ -15,7 +15,7 @@ public class PlayerMovementNew : NetworkBehaviour
     [SerializeField] public Rigidbody _rb;
     [SerializeField] private Animator _animator;
     [SerializeField] private GameObject _playerModel;
-    [SerializeField] private GameObject _puppet;
+    [SerializeField] public GameObject _puppet;
     [SerializeField] private BehaviourPuppet _puppetBehaviour;
     [SerializeField] private Transform _mouseTarget;
     [SerializeField] private Transform _raycastCenter;
@@ -53,9 +53,10 @@ public class PlayerMovementNew : NetworkBehaviour
     [SerializeField] private bool _isActing = false;
     [SerializeField] private bool _grounded;
     [SerializeField] private bool _enabled;
-    [SerializeField] private ActionStates _currentActionState;
+    [SerializeField] private ActionState _currentActionState;
+    [SerializeField] private PlayerStatusController _playerStatus;
 
-    private enum ActionStates
+    private enum ActionState
     {
         melee,
         shoot
@@ -71,14 +72,12 @@ public class PlayerMovementNew : NetworkBehaviour
 
     private void Start()
     {
-        _currentActionState = ActionStates.melee;
+        SceneManager.sceneLoaded += OnSceneLoaded;
 
-        GetComponent<PlayerStatusController>().HealthBar.parent.gameObject.SetActive(false);
-        
-        _playerModel.SetActive(false);
-        _puppet.SetActive(false);
-        _rb.isKinematic = true;
-        _enabled = false;
+        _currentActionState = ActionState.melee;
+        _playerStatus = GetComponent<PlayerStatusController>();
+
+        DisablePlayer();
 
         if (!hasAuthority)
         {
@@ -89,18 +88,15 @@ public class PlayerMovementNew : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        CheckMovementPermissions();
-
         if (!_enabled || !hasAuthority) { return; }
 
         GatherInput();
+        Animate();
 
         if (_puppetBehaviour.state == BehaviourPuppet.State.Puppet)
         {
             Rotate();
         }
-
-        Animate();
     }
 
     private void FixedUpdate()
@@ -113,36 +109,68 @@ public class PlayerMovementNew : NetworkBehaviour
         Action();
     }
 
-    public void CheckMovementPermissions()
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (!_enabled)
         {
-            if (SceneManager.GetActiveScene().name.Contains("Game"))
+            if (scene.name.Contains("Game"))
             {
                 // Move player to spawn location
                 Vector3 spawnPos = new Vector3(UnityEngine.Random.Range(-3, 3), 2f, UnityEngine.Random.Range(-3, 3));
                 _rb.transform.position = spawnPos;
                 _puppet.transform.position = spawnPos;
 
-                GetComponent<PlayerStatusController>().HealthBar.parent.gameObject.SetActive(true);
-
-                _rb.isKinematic = false;
-                _playerModel.SetActive(true);
-                _puppet.SetActive(true);
-                _enabled = true;
+                EnablePlayer();
             }
         }
         else
         {
-            if (!SceneManager.GetActiveScene().name.Contains("Game"))
+            if (!scene.name.Contains("Game"))
             {
-                GetComponent<PlayerStatusController>().HealthBar.parent.gameObject.SetActive(false);
-
-                _rb.isKinematic = true;
-                _playerModel.SetActive(false);
-                _puppet.SetActive(false);
-                _enabled = false;
+                DisablePlayer();
             }
+        }
+    }
+
+    private void DisablePlayer()
+    {
+        _playerStatus.HealthBar.parent.gameObject.SetActive(false);
+        _playerModel.SetActive(false);
+        _puppet.SetActive(false);
+        _rb.isKinematic = true;
+        _enabled = false;
+    }
+
+    private void EnablePlayer()
+    {
+        _playerStatus.HealthBar.parent.gameObject.SetActive(true);
+        _rb.isKinematic = false;
+        _playerModel.SetActive(true);
+        _puppet.SetActive(true);
+        _enabled = true;
+    }
+
+
+    public void UpdatePlayerState(PlayerStatusController.PlayerState state)
+    {
+        if(state == PlayerStatusController.PlayerState.Respawn)
+        {
+            _puppet.SetActive(false);
+
+            Vector3 spawnPos = new Vector3(UnityEngine.Random.Range(-3, 3), 2f, UnityEngine.Random.Range(-3, 3));
+            _rb.transform.position = spawnPos;
+            _puppet.transform.position = spawnPos;
+
+            EnablePlayer();
+
+            _puppet.GetComponent<PuppetMaster>().state = PuppetMaster.State.Alive;
+        }
+        else if (state == PlayerStatusController.PlayerState.Dead)
+        {
+            _rb.isKinematic = true;
+            _enabled = false;
+
+            _puppet.GetComponent<PuppetMaster>().state = PuppetMaster.State.Dead;
         }
     }
 
@@ -328,7 +356,7 @@ public class PlayerMovementNew : NetworkBehaviour
         // Begin Action
         if (_pressedAction)
         {
-            if (!_isActing && _currentActionState == ActionStates.melee)
+            if (!_isActing && _currentActionState == ActionState.melee)
             {
                 float duration = 1f;
                 _isActing = true;
