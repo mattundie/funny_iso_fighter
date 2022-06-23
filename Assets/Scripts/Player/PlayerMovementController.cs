@@ -357,7 +357,7 @@ public class PlayerMovementController : NetworkBehaviour
     void RpcPlayerAction()
     {
         // Call Command Function
-        float duration = 1f;
+        float duration = 0.75f;
 
         _animator.SetTrigger("slap");
         foreach (var contact in _explosiveContacts)
