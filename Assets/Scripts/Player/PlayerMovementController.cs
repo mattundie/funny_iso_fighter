@@ -163,6 +163,10 @@ public class PlayerMovementController : NetworkBehaviour
 
             _puppet.GetComponent<PuppetMaster>().state = PuppetMaster.State.Dead;
         }
+        else if(state == PlayerStatusController.PlayerState.Alive)
+        {
+            _puppet.GetComponent<PuppetMaster>().state = PuppetMaster.State.Alive;
+        }
     }
 
     #region Movement Functions
@@ -369,9 +373,9 @@ public class PlayerMovementController : NetworkBehaviour
     }
 
     [ClientRpc]
-    void RpcApplyExplosiveForce(GameObject collision)
+    public void RpcApplyExplosiveForce()
     {
-        
+        Invoke("DeadReset", 2f);
     }
     #endregion
 
@@ -394,6 +398,7 @@ public class PlayerMovementController : NetworkBehaviour
         {
             targetCollision.transform.root.GetComponent<PlayerMovementController>()._puppet.GetComponent<PuppetMaster>().state = PuppetMaster.State.Dead;
             targetCollision.transform.root.GetComponent<PlayerStatusController>().ModifyHealth(healthModifier);
+            targetCollision.transform.root.GetComponent<PlayerMovementController>().RpcApplyExplosiveForce();
         }
 
         targetCollision.rigidbody.AddForce(velocity * force, ForceMode.Impulse);
@@ -404,6 +409,11 @@ public class PlayerMovementController : NetworkBehaviour
     private void ActionReset()
     {
         _isActing = false;
+    }
+
+    private void DeadReset()
+    {
+        UpdatePlayerState(PlayerStatusController.PlayerState.Alive);
     }
 
     private void ExplosiveContactDisable()
