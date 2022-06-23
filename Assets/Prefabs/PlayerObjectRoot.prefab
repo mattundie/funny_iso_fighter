@@ -2827,14 +2827,9 @@ MonoBehaviour:
   collisionResistanceMultipliers:
   - layers:
       serializedVersion: 2
-      m_Bits: 0
-    multiplier: 1
-    collisionThreshold: 0
-  - layers:
-      serializedVersion: 2
       m_Bits: 128
     multiplier: 5
-    collisionThreshold: 0
+    collisionThreshold: 1.54
   maxCollisions: 30
   regainPinSpeed: 1
   boostFalloff: 1

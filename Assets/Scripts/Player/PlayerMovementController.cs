@@ -367,6 +367,12 @@ public class PlayerMovementController : NetworkBehaviour
         Invoke("ActionReset", duration);
         Invoke("ExplosiveContactDisable", duration);
     }
+
+    [ClientRpc]
+    void RpcApplyExplosiveForce(GameObject collision)
+    {
+        collision.transform.root.GetComponent<PlayerMovementController>()._puppet.GetComponent<PuppetMaster>().state = PuppetMaster.State.Dead;
+    }
     #endregion
 
     #region Command Functions
@@ -384,10 +390,13 @@ public class PlayerMovementController : NetworkBehaviour
     {
         if(!isServer) { return; }
 
-        targetCollision.rigidbody.AddForce(velocity * force, ForceMode.Impulse);
-        
-        if(targetCollision.gameObject.layer == 7)   // If ragdoll
+        if (targetCollision.gameObject.layer == 7)  // If ragdoll
+        {
+            RpcApplyExplosiveForce(targetCollision.gameObject);
             targetCollision.transform.root.GetComponent<PlayerStatusController>().ModifyHealth(healthModifier);
+        }
+
+        targetCollision.rigidbody.AddForce(velocity * force, ForceMode.Impulse);
     }
     #endregion
 
