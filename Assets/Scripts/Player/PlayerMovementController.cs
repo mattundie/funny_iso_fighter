@@ -371,7 +371,7 @@ public class PlayerMovementController : NetworkBehaviour
     [ClientRpc]
     void RpcApplyExplosiveForce(GameObject collision)
     {
-        collision.transform.root.GetComponent<PlayerMovementController>()._puppet.GetComponent<PuppetMaster>().state = PuppetMaster.State.Dead;
+        
     }
     #endregion
 
@@ -392,7 +392,7 @@ public class PlayerMovementController : NetworkBehaviour
 
         if (targetCollision.gameObject.layer == 7)  // If ragdoll
         {
-            RpcApplyExplosiveForce(targetCollision.gameObject);
+            targetCollision.transform.root.GetComponent<PlayerMovementController>()._puppet.GetComponent<PuppetMaster>().state = PuppetMaster.State.Dead;
             targetCollision.transform.root.GetComponent<PlayerStatusController>().ModifyHealth(healthModifier);
         }
 
