@@ -2824,7 +2824,17 @@ MonoBehaviour:
       get knocked out more easily. If using a curve, the value will be evaluated
       by each muscle's target velocity magnitude. This can be used to make collision
       resistance higher while the character moves or animates faster.
-  collisionResistanceMultipliers: []
+  collisionResistanceMultipliers:
+  - layers:
+      serializedVersion: 2
+      m_Bits: 0
+    multiplier: 1
+    collisionThreshold: 0
+  - layers:
+      serializedVersion: 2
+      m_Bits: 128
+    multiplier: 5
+    collisionThreshold: 0
   maxCollisions: 30
   regainPinSpeed: 1
   boostFalloff: 1
@@ -2918,16 +2928,16 @@ MonoBehaviour:
       puppetMaterial: {fileID: 0}
       unpinnedMaterial: {fileID: 0}
   knockOutDistance: 3.5
-  unpinnedMuscleWeightMlp: 0.4
+  unpinnedMuscleWeightMlp: 0.164
   maxRigidbodyVelocity: 7
   pinWeightThreshold: 1
   unpinnedMuscleKnockout: 1
   dropProps: 0
   canGetUp: 1
   getUpDelay: 1
-  blendToAnimationTime: 0.3
+  blendToAnimationTime: 0.4
   maxGetUpVelocity: 0.4
-  minGetUpDuration: 2
+  minGetUpDuration: 1
   getUpCollisionResistanceMlp: 2
   getUpRegainPinSpeedMlp: 1
   getUpKnockOutDistanceMlp: 1
@@ -3703,7 +3713,6 @@ MonoBehaviour:
   _grounded: 0
   _enabled: 0
   _currentActionState: 0
-  _playerStatus: {fileID: 0}
 --- !u!114 &1893189127
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3860,7 +3869,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  clientAuthority: 0
+  clientAuthority: 1
   sendInterval: 0.05
   syncPosition: 1
   syncRotation: 1
@@ -3895,7 +3904,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  clientAuthority: 0
+  clientAuthority: 1
   sendInterval: 0.05
   syncPosition: 1
   syncRotation: 1
@@ -3930,7 +3939,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  clientAuthority: 0
+  clientAuthority: 1
   sendInterval: 0.05
   syncPosition: 1
   syncRotation: 1
@@ -3965,7 +3974,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  clientAuthority: 0
+  clientAuthority: 1
   sendInterval: 0.05
   syncPosition: 1
   syncRotation: 1
@@ -4000,7 +4009,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  clientAuthority: 0
+  clientAuthority: 1
   sendInterval: 0.05
   syncPosition: 1
   syncRotation: 1
@@ -4035,7 +4044,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  clientAuthority: 0
+  clientAuthority: 1
   sendInterval: 0.05
   syncPosition: 1
   syncRotation: 1
@@ -4070,7 +4079,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  clientAuthority: 0
+  clientAuthority: 1
   sendInterval: 0.05
   syncPosition: 1
   syncRotation: 1
@@ -4105,7 +4114,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  clientAuthority: 0
+  clientAuthority: 1
   sendInterval: 0.05
   syncPosition: 1
   syncRotation: 1
@@ -4140,7 +4149,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  clientAuthority: 0
+  clientAuthority: 1
   sendInterval: 0.05
   syncPosition: 1
   syncRotation: 1
@@ -4175,7 +4184,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  clientAuthority: 0
+  clientAuthority: 1
   sendInterval: 0.05
   syncPosition: 1
   syncRotation: 1
@@ -4210,7 +4219,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  clientAuthority: 0
+  clientAuthority: 1
   sendInterval: 0.05
   syncPosition: 1
   syncRotation: 1
@@ -4245,7 +4254,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  clientAuthority: 0
+  clientAuthority: 1
   sendInterval: 0.05
   syncPosition: 1
   syncRotation: 1
@@ -4280,7 +4289,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  clientAuthority: 0
+  clientAuthority: 1
   sendInterval: 0.05
   syncPosition: 1
   syncRotation: 1
@@ -4315,7 +4324,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  clientAuthority: 0
+  clientAuthority: 1
   sendInterval: 0.05
   syncPosition: 1
   syncRotation: 1
@@ -4350,7 +4359,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  clientAuthority: 0
+  clientAuthority: 1
   sendInterval: 0.05
   syncPosition: 1
   syncRotation: 1

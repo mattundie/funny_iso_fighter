@@ -55,7 +55,8 @@ public class PlayerMovementController : NetworkBehaviour
     [SerializeField] [SyncVar] private bool _grounded;
     [SerializeField] [SyncVar] private bool _enabled;
     [SerializeField] private ActionState _currentActionState;
-    [SerializeField] private PlayerStatusController _playerStatus;
+    
+    private PlayerStatusController _playerStatus;
 
     private enum ActionState
     {
@@ -72,7 +73,7 @@ public class PlayerMovementController : NetworkBehaviour
         SceneManager.sceneLoaded += OnSceneLoaded;
 
         _currentActionState = ActionState.melee;
-        _playerStatus = GetComponent<PlayerStatusController>();
+        _playerStatus = this.GetComponent<PlayerStatusController>();
 
         DisablePlayer();
 
@@ -92,6 +93,7 @@ public class PlayerMovementController : NetworkBehaviour
         if (_puppetBehaviour.state == BehaviourPuppet.State.Puppet)
         {
             Rotate();
+            Action();
         }
     }
 
@@ -102,7 +104,6 @@ public class PlayerMovementController : NetworkBehaviour
         Jump();
         Hover();
         Move();
-        Action();
     }
 
     private void DisablePlayer()
@@ -308,7 +309,7 @@ public class PlayerMovementController : NetworkBehaviour
             return;
 
         // Begin Action
-        if (_input._actionPressed)
+        if (_input.IsActionInput(PlayerInput.InputType.Down))
         {
             if (!_isActing && _currentActionState == ActionState.melee)
             {
@@ -357,7 +358,7 @@ public class PlayerMovementController : NetworkBehaviour
     void RpcPlayerAction()
     {
         // Call Command Function
-        float duration = 0.75f;
+        float duration = 1f;
 
         _animator.SetTrigger("slap");
         foreach (var contact in _explosiveContacts)
