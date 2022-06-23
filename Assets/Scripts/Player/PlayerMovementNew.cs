@@ -15,6 +15,7 @@ public class PlayerMovementNew : NetworkBehaviour
     [SerializeField] public Rigidbody _rb;
     [SerializeField] private Animator _animator;
     [SerializeField] private GameObject _playerModel;
+    [SerializeField] private PlayerInput _input;
     [SerializeField] public GameObject _puppet;
     [SerializeField] private BehaviourPuppet _puppetBehaviour;
     [SerializeField] private Transform _mouseTarget;
@@ -62,11 +63,7 @@ public class PlayerMovementNew : NetworkBehaviour
         shoot
     }
 
-    private Vector3 _buttonInput;
     private RaycastHit _raycastHit;
-    private bool _pressedJump;
-    private float _pressedJumpTimer;
-    private bool _pressedAction;
 
     private bool IsMouseOverGameWindow { get { return !(0 > Input.mousePosition.x || 0 > Input.mousePosition.y || Screen.width < Input.mousePosition.x || Screen.height < Input.mousePosition.y); } }
 
@@ -90,7 +87,6 @@ public class PlayerMovementNew : NetworkBehaviour
     {
         if (!_enabled || !hasAuthority) { return; }
 
-        GatherInput();
         Animate();
 
         if (_puppetBehaviour.state == BehaviourPuppet.State.Puppet)
@@ -107,29 +103,6 @@ public class PlayerMovementNew : NetworkBehaviour
         Hover();
         Move();
         Action();
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        if (!_enabled)
-        {
-            if (scene.name.Contains("Game"))
-            {
-                // Move player to spawn location
-                Vector3 spawnPos = new Vector3(UnityEngine.Random.Range(-3, 3), 2f, UnityEngine.Random.Range(-3, 3));
-                _rb.transform.position = spawnPos;
-                _puppet.transform.position = spawnPos;
-
-                EnablePlayer();
-            }
-        }
-        else
-        {
-            if (!scene.name.Contains("Game"))
-            {
-                DisablePlayer();
-            }
-        }
     }
 
     private void DisablePlayer()
@@ -150,6 +123,23 @@ public class PlayerMovementNew : NetworkBehaviour
         _enabled = true;
     }
 
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
+        if (!_enabled) {
+            if (scene.name.Contains("Game")) {
+                // Move player to spawn location
+                Vector3 spawnPos = new Vector3(UnityEngine.Random.Range(-3, 3), 2f, UnityEngine.Random.Range(-3, 3));
+                _rb.transform.position = spawnPos;
+                _puppet.transform.position = spawnPos;
+
+                EnablePlayer();
+            }
+        }
+        else {
+            if (!scene.name.Contains("Game")) {
+                DisablePlayer();
+            }
+        }
+    }
 
     public void UpdatePlayerState(PlayerStatusController.PlayerState state)
     {
@@ -171,40 +161,6 @@ public class PlayerMovementNew : NetworkBehaviour
             _enabled = false;
 
             _puppet.GetComponent<PuppetMaster>().state = PuppetMaster.State.Dead;
-        }
-    }
-
-    void GatherInput()
-    {
-        _buttonInput = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
-
-        // Jumping
-        if (Input.GetButtonDown("Jump"))
-        {
-            _pressedJump = true;
-            _pressedJumpTimer = Time.time;
-        }
-        else if (Input.GetButton("Jump"))
-        {
-            _pressedJump = true;
-
-            if (Time.time - _pressedJumpTimer > _jumpTime)
-                _pressedJump = false;
-        }
-        if (Input.GetButtonUp("Jump"))
-        {
-            _pressedJump = false;
-            _pressedJumpTimer = 0f;
-        }
-
-        // Action
-        if (Input.GetMouseButtonDown(0))
-        {
-            _pressedAction = true;
-        }
-        else if (Input.GetMouseButtonUp(0))
-        {
-            _pressedAction = false;
         }
     }
 
@@ -256,7 +212,7 @@ public class PlayerMovementNew : NetworkBehaviour
     void Move()
     {
         Vector3 groundVel;
-        Vector3 move = _buttonInput.normalized.ToIso();
+        Vector3 move = _input._moveInput.normalized.ToIso();
         Vector3 m_UnitGoal = move;
         Vector3 m_GoalVel = _rb.velocity;
         Vector3 unitVel = m_GoalVel.normalized;
@@ -302,14 +258,13 @@ public class PlayerMovementNew : NetworkBehaviour
 
     void Rotate()
     {
-
-        if (_buttonInput == Vector3.zero)
+        if (_input._moveInput == Vector3.zero)
         {
             _rb.angularVelocity = _rb.angularVelocity * 0.05f;
             return;
         }
 
-        Vector3 movementDirection = _buttonInput.ToIso();
+        Vector3 movementDirection = _input._moveInput.ToIso();
         movementDirection.Normalize();
 
         Quaternion toRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
@@ -327,7 +282,7 @@ public class PlayerMovementNew : NetworkBehaviour
         if (_puppetBehaviour.state != BehaviourPuppet.State.Puppet)
             return;
 
-        if (_pressedJump && _jumpBufferTimeCounter > 0.0f && !_isJumping && _coyoteTimeCounter > 0.0f)
+        if (_input._jumpPressed && _jumpBufferTimeCounter > 0.0f && !_isJumping && _coyoteTimeCounter > 0.0f)
         {
             calculatedJumpInput = _initialJumpForceMultiplier;
             _rb.AddForce(new Vector3(0, calculatedJumpInput, 0), ForceMode.Impulse);
@@ -337,13 +292,12 @@ public class PlayerMovementNew : NetworkBehaviour
             _coyoteTimeCounter = 0;
             _isJumping = true;
         }
-        else if (_pressedJump && _isJumping && !_grounded && _jumpTimeCounter > 0.0f)
+        else if (_input._jumpPressed && _isJumping && !_grounded && _jumpTimeCounter > 0.0f)
         {
             calculatedJumpInput = _initialJumpForceMultiplier * _continualJumpForceMultiplier;
             _rb.AddForce(new Vector3(0, calculatedJumpInput, 0), ForceMode.Force);
         }
-        else if(_isJumping && _grounded && !_pressedJump)
-        {
+        else if(_isJumping && _grounded && !_input._jumpPressed) {
             _isJumping = false;
         }
     }
@@ -354,7 +308,7 @@ public class PlayerMovementNew : NetworkBehaviour
             return;
 
         // Begin Action
-        if (_pressedAction)
+        if (_input._actionPressed)
         {
             if (!_isActing && _currentActionState == ActionState.melee)
             {
@@ -442,7 +396,7 @@ public class PlayerMovementNew : NetworkBehaviour
     }
     private void SetJumpBufferCounter()
     {
-        if(!_jumpWasPressedLastFrame && _pressedJump)
+        if(!_jumpWasPressedLastFrame && _input._jumpPressed)
         {
             _jumpBufferTimeCounter = _jumpBufferTime;
         }
@@ -450,8 +404,13 @@ public class PlayerMovementNew : NetworkBehaviour
         {
             _jumpBufferTimeCounter -= Time.fixedDeltaTime;
         }
-        _jumpWasPressedLastFrame = _pressedJump;
+        _jumpWasPressedLastFrame = _input._jumpPressed;
     }
     #endregion
 }
 
+
+public static class Helpers {
+    private static Matrix4x4 _isoMatrix = Matrix4x4.Rotate(Quaternion.Euler(0, 45, 0));
+    public static Vector3 ToIso(this Vector3 input) => _isoMatrix.MultiplyPoint3x4(input);
+}
