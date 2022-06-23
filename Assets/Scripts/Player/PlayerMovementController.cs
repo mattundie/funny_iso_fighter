@@ -373,9 +373,16 @@ public class PlayerMovementController : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void RpcApplyExplosiveForce()
+    public void RpcApplyExplosiveForce(GameObject collision, float force, Vector3 velocity, float healthModifier)
     {
-        Invoke("DeadReset", _puppetBehaviour.minGetUpDuration);
+        if (collision.layer == 7)
+        {
+            collision.transform.root.GetComponent<PlayerMovementController>()._puppet.GetComponent<PuppetMaster>().state = PuppetMaster.State.Dead;
+            collision.transform.root.GetComponent<PlayerStatusController>().ModifyHealth(healthModifier);
+            Invoke("DeadReset", _puppetBehaviour.minGetUpDuration);
+        }
+
+        collision.GetComponent<Rigidbody>().AddForce(velocity * force, ForceMode.Impulse);
     }
     #endregion
 
@@ -394,14 +401,7 @@ public class PlayerMovementController : NetworkBehaviour
     {
         if(!isServer) { return; }
 
-        if (targetCollision.gameObject.layer == 7)  // If ragdoll
-        {
-            targetCollision.transform.root.GetComponent<PlayerMovementController>()._puppet.GetComponent<PuppetMaster>().state = PuppetMaster.State.Dead;
-            targetCollision.transform.root.GetComponent<PlayerStatusController>().ModifyHealth(healthModifier);
-            targetCollision.transform.root.GetComponent<PlayerMovementController>().RpcApplyExplosiveForce();
-        }
-
-        targetCollision.rigidbody.AddForce(velocity * force, ForceMode.Impulse);
+        targetCollision.transform.root.GetComponent<PlayerMovementController>().RpcApplyExplosiveForce(targetCollision.gameObject, force, velocity, healthModifier);
     }
     #endregion
 
