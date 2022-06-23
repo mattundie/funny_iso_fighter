@@ -375,7 +375,7 @@ public class PlayerMovementController : NetworkBehaviour
     [ClientRpc]
     public void RpcApplyExplosiveForce()
     {
-        Invoke("DeadReset", 2f);
+        Invoke("DeadReset", _puppetBehaviour.minGetUpDuration);
     }
     #endregion
 
