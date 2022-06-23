@@ -312,15 +312,7 @@ public class PlayerMovementController : NetworkBehaviour
         {
             if (!_isActing && _currentActionState == ActionState.melee)
             {
-                float duration = 1f;
-                _isActing = true;
-                _animator.SetTrigger("slap");
-
-                foreach (var contact in _explosiveContacts)
-                    contact._enabled = true;
-
-                Invoke("ActionReset", duration);
-                Invoke("ExplosiveContactDisable", duration);
+                CmdPlayerAction();
             }
         }
     }
@@ -360,6 +352,44 @@ public class PlayerMovementController : NetworkBehaviour
     }
     #endregion
 
+    #region ClientRpc Functions
+    [ClientRpc]
+    void RpcPlayerAction()
+    {
+        // Call Command Function
+        float duration = 1f;
+
+        _animator.SetTrigger("slap");
+        foreach (var contact in _explosiveContacts)
+            contact._enabled = true;
+
+        Invoke("ActionReset", duration);
+        Invoke("ExplosiveContactDisable", duration);
+    }
+    #endregion
+
+    #region Command Functions
+    [Command]
+    void CmdPlayerAction()
+    {
+        _isActing = true;
+
+        RpcPlayerAction();
+    }
+    #endregion
+
+    #region Public Networking Functions
+    public void ApplyExplosiveForce(Collision targetCollision, float force, Vector3 velocity, float healthModifier)
+    {
+        if(!isServer) { return; }
+
+        targetCollision.rigidbody.AddForce(velocity * force, ForceMode.Impulse);
+        
+        if(targetCollision.gameObject.layer == 7)   // If ragdoll
+            targetCollision.transform.root.GetComponent<PlayerStatusController>().ModifyHealth(healthModifier);
+    }
+    #endregion
+
     #region Helper Functions
     private void ActionReset()
     {
@@ -374,7 +404,7 @@ public class PlayerMovementController : NetworkBehaviour
 
     private void SetJumpTimeCounter()
     {
-        if(_isJumping && !_grounded)
+        if (_isJumping && !_grounded)
         {
             _jumpTimeCounter -= Time.fixedDeltaTime;
         }
@@ -396,28 +426,16 @@ public class PlayerMovementController : NetworkBehaviour
     }
     private void SetJumpBufferCounter()
     {
-        if(!_jumpWasPressedLastFrame && _input._jumpPressed)
+        if (!_jumpWasPressedLastFrame && _input._jumpPressed)
         {
             _jumpBufferTimeCounter = _jumpBufferTime;
         }
-        else if(_jumpBufferTime > 0.0f)
+        else if (_jumpBufferTime > 0.0f)
         {
             _jumpBufferTimeCounter -= Time.fixedDeltaTime;
         }
         _jumpWasPressedLastFrame = _input._jumpPressed;
     }
-    #endregion
-
-    #region ClientRpc Functions
-
-    #endregion
-
-    #region Command Functions
-
-    #endregion
-
-    #region Hook Functions
-
     #endregion
 }
 

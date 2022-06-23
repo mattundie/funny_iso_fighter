@@ -5356,6 +5356,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _enabled: 0
   _explosiveForce: 20
+  _networkParent: {fileID: 1893189124}
 --- !u!1 &6629647040607410605
 GameObject:
   m_ObjectHideFlags: 0

@@ -86,7 +86,7 @@ public class PlayerStatusController : NetworkBehaviour
         }
     }
 
-    private void ModifyHealth(float modifier)
+    public void ModifyHealth(float modifier)
     {
         if (!isServer) return;
 
