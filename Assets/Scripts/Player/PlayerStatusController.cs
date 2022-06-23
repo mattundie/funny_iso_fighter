@@ -62,7 +62,7 @@ public class PlayerStatusController : NetworkBehaviour
 
         if(!hasAuthority) { return; }
 
-        if (GetComponent<PlayerMovementNew>()._rb.transform.position.magnitude > 100f)
+        if (GetComponent<PlayerMovementController>()._rb.transform.position.magnitude > 100f)
         {
             PlayerDeath();
             CmdPlayerRespawn();
@@ -123,13 +123,13 @@ public class PlayerStatusController : NetworkBehaviour
     [ClientRpc]
     private void RpcPlayerDeath()
     {
-      this.GetComponent<PlayerMovementNew>().UpdatePlayerState(PlayerState.Dead);
+      this.GetComponent<PlayerMovementController>().UpdatePlayerState(PlayerState.Dead);
     }
 
     [ClientRpc]
     private void RpcPlayerRespawn()
     {
-        this.GetComponent<PlayerMovementNew>().UpdatePlayerState(PlayerState.Respawn);
+        this.GetComponent<PlayerMovementController>().UpdatePlayerState(PlayerState.Respawn);
     }
     #endregion
 

@@ -9,7 +9,7 @@ using RootMotion.Dynamics;
 using RootMotion.FinalIK;
 using System;
 
-public class PlayerMovementNew : NetworkBehaviour
+public class PlayerMovementController : NetworkBehaviour
 {
     [Header("Components")]
     [SerializeField] public Rigidbody _rb;
@@ -49,11 +49,11 @@ public class PlayerMovementNew : NetworkBehaviour
     [SerializeField] private bool _jumpWasPressedLastFrame = false;
 
     [Header("Monitored Data")]
-    [SerializeField] private bool _isMoving = false;
-    [SerializeField] private bool _isJumping = false;
-    [SerializeField] private bool _isActing = false;
-    [SerializeField] private bool _grounded;
-    [SerializeField] private bool _enabled;
+    [SerializeField] [SyncVar] private bool _isMoving = false;
+    [SerializeField] [SyncVar] private bool _isJumping = false;
+    [SerializeField] [SyncVar] private bool _isActing = false;
+    [SerializeField] [SyncVar] private bool _grounded;
+    [SerializeField] [SyncVar] private bool _enabled;
     [SerializeField] private ActionState _currentActionState;
     [SerializeField] private PlayerStatusController _playerStatus;
 
@@ -406,6 +406,18 @@ public class PlayerMovementNew : NetworkBehaviour
         }
         _jumpWasPressedLastFrame = _input._jumpPressed;
     }
+    #endregion
+
+    #region ClientRpc Functions
+
+    #endregion
+
+    #region Command Functions
+
+    #endregion
+
+    #region Hook Functions
+
     #endregion
 }
 

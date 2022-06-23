@@ -3717,7 +3717,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
-  syncInterval: 0.1
+  syncInterval: 0.05
   clientAuthority: 1
   sendInterval: 0.05
   syncPosition: 1
@@ -3751,7 +3751,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
-  syncInterval: 0.1
+  syncInterval: 0.05
   target: {fileID: 2743702733745852146}
   clientAuthority: 1
   syncVelocity: 1
@@ -3773,7 +3773,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
-  syncInterval: 0.1
+  syncInterval: 0.05
   clientAuthority: 1
   animator: {fileID: 2743702733745852147}
 --- !u!114 &789409602
@@ -3789,7 +3789,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
-  syncInterval: 0.1
+  syncInterval: 0.05
   clientAuthority: 1
   sendInterval: 0.05
   syncPosition: 1
@@ -5354,8 +5354,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69cce4827ad6b4a4cb83cbc2247fdc9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _enabled: 1
-  _explosiveForce: 150
+  _enabled: 0
+  _explosiveForce: 20
 --- !u!1 &6629647040607410605
 GameObject:
   m_ObjectHideFlags: 0
