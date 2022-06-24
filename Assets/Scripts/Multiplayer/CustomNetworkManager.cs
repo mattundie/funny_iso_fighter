@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 public class CustomNetworkManager : NetworkManager
 {
     [SerializeField] private PlayerObjectController GamePlayerPrefab;
+    public Material[] PlayerMaterials;
     public List<PlayerObjectController> GamePlayers { get; } = new List<PlayerObjectController>();
 
     // Called every time a player is added to the server

@@ -53,6 +53,8 @@ public class PlayerObjectController : NetworkBehaviour
     {
         Manager.GamePlayers.Add(this);
 
+        transform.Find("PlayerObject").Find("PlayerObjectModel").GetComponent<SkinnedMeshRenderer>().material = Manager.PlayerMaterials[PlayerIdNumber - 1];
+
         if (SceneManager.GetActiveScene().name == "Lobby")
         {
             LobbyController.Instance.UpdateLobbyName();

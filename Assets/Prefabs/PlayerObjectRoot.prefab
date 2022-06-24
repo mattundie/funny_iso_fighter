@@ -2483,7 +2483,7 @@ GameObject:
   - component: {fileID: 2743702732949538646}
   - component: {fileID: 2743702732949538645}
   m_Layer: 6
-  m_Name: Character_Cube
+  m_Name: PlayerObjectModel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
