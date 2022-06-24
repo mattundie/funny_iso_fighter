@@ -11,9 +11,7 @@ public class PlayerStatusController : NetworkBehaviour
     #region Components
     [Header("Components")]
     public Transform HealthBar;
-    public Image HealthBarIcon;
-    public Sprite HealthBarHappy;
-    public Sprite HealthBarSad;
+    public PlayerAvatar _avatar;
     #endregion
 
     #region Status Data
@@ -74,17 +72,13 @@ public class PlayerStatusController : NetworkBehaviour
     [Client]
     private void PopulateHealthUI()
     {
-        if (_health < 20)
+        if (_health < 35)
         {
             HealthBar.gameObject.GetComponent<Image>().color = Color.red;
-            if (HealthBarIcon.sprite != HealthBarSad)
-                HealthBarIcon.sprite = HealthBarSad;
         }
-        else if (_health >= 20)
+        else if (_health >= 35)
         {
             HealthBar.gameObject.GetComponent<Image>().color = Color.green;
-            if (HealthBarIcon.sprite != HealthBarHappy)
-                HealthBarIcon.sprite = HealthBarHappy;
         }
     }
 

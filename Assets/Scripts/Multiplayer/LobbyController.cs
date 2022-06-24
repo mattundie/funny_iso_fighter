@@ -149,6 +149,9 @@ public class LobbyController : MonoBehaviour
             newPlayerItem.transform.localScale = Vector3.one;
 
             PlayerListItems.Add(NewPlayerItemScript);
+
+            player.GetComponent<PlayerStatusController>()._avatar._playerSteamId = player.PlayerSteamId;
+            player.GetComponent<PlayerStatusController>()._avatar.PopulateUI();
         }
 
         PlayerItemCreated = true;
@@ -173,6 +176,9 @@ public class LobbyController : MonoBehaviour
                 newPlayerItem.transform.localScale = Vector3.one;
 
                 PlayerListItems.Add(NewPlayerItemScript);
+
+                player.GetComponent<PlayerStatusController>()._avatar._playerSteamId = player.PlayerSteamId;
+                player.GetComponent<PlayerStatusController>()._avatar.PopulateUI();
             }
         }
 
