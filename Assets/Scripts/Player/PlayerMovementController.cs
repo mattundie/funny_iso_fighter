@@ -51,7 +51,7 @@ public class PlayerMovementController : NetworkBehaviour
     [Header("Monitored Data")]
     [SerializeField] [SyncVar] private bool _isMoving = false;
     [SerializeField] [SyncVar] private bool _isJumping = false;
-    [SerializeField] [SyncVar] private bool _isActing = false;
+    [SerializeField] [SyncVar] public bool _isActing = false;
     [SerializeField] [SyncVar] private bool _grounded;
     [SerializeField] [SyncVar] private bool _enabled;
     [SerializeField] private ActionState _currentActionState;
@@ -162,8 +162,6 @@ public class PlayerMovementController : NetworkBehaviour
             _enabled = false;
 
             _puppet.GetComponent<PuppetMaster>().state = PuppetMaster.State.Dead;
-
-            Invoke("DeadReset", _puppetBehaviour.minGetUpDuration);
         }
         else if(state == PlayerStatusController.PlayerState.Alive)
         {
@@ -377,15 +375,7 @@ public class PlayerMovementController : NetworkBehaviour
         Invoke("ExplosiveContactDisable", duration);
     }
 
-    [ClientRpc]
-    public void RpcApplyExplosiveForceToPlayer(GameObject collision, float force, Vector3 velocity, float healthModifier)
-    {
-        collision.GetComponent<PlayerStatusController>().ModifyHealth(healthModifier);
 
-        Debug.Log($"{GetComponent<PlayerObjectController>().PlayerName} just schmacked {collision.GetComponent<PlayerObjectController>().PlayerName}");
-
-        collision.GetComponent<PlayerMovementController>()._puppet.transform.GetChild(0).GetComponent<Rigidbody>().AddForce(velocity * force, ForceMode.Impulse);
-    }
     #endregion
 
     #region Command Functions
@@ -399,29 +389,13 @@ public class PlayerMovementController : NetworkBehaviour
     #endregion
 
     #region Public Networking Functions
-    public void ApplyExplosiveForce(Collision targetCollision, float force, Vector3 velocity, float healthModifier)
-    {
-        if(!isServer) { return; }
 
-        if (targetCollision.gameObject.layer == 8 || targetCollision.gameObject.layer == 9)  // If ground or collision object, add force to direct transform
-            targetCollision.rigidbody.AddForce(velocity * force, ForceMode.Impulse);
-        else if (targetCollision.gameObject.layer == 7)     // If player ragdoll layer
-        {
-            targetCollision.transform.root.GetComponent<PlayerStatusController>().PlayerDeath();
-            RpcApplyExplosiveForceToPlayer(targetCollision.transform.root.gameObject, force, velocity, healthModifier);
-        }
-    }
     #endregion
 
     #region Helper Functions
     private void ActionReset()
     {
         _isActing = false;
-    }
-
-    private void DeadReset()
-    {
-        UpdatePlayerState(PlayerStatusController.PlayerState.Alive);
     }
 
     private void ExplosiveContactDisable()

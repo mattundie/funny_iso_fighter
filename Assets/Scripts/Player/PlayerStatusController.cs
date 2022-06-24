@@ -21,12 +21,15 @@ public class PlayerStatusController : NetworkBehaviour
     [SyncVar] public float _health;
     [SyncVar] public float _maxHealth = 100;
     [SyncVar] public bool _dead = false;
+    [SyncVar] public bool _dazed = false;
     [SyncVar] public int _deaths;
     #endregion
 
     #region Settings
-    
+    [SerializeField] private float _dazeDuration = 2f;
     #endregion
+
+    [SyncVar] private float _dazedTimeStart = 0f;
 
     public enum PlayerState
     {
@@ -44,6 +47,8 @@ public class PlayerStatusController : NetworkBehaviour
 
     private void Update()
     {
+        PlayerUndazed();
+
         if (_health == 0 && !_dead)
             PlayerDeath();
 
@@ -110,6 +115,23 @@ public class PlayerStatusController : NetworkBehaviour
         RpcPlayerDeath();
     }
 
+    public void PlayerActionContact(GameObject bodyPart, Vector3 velocity, float force, float damage)
+    {
+        if (isServer)
+        {
+            _dazed = true;
+            _dazedTimeStart = Time.time;
+
+            ModifyHealth(damage);
+            RpcPlayerDazed();
+        }
+
+        if (hasAuthority)
+        {
+            bodyPart.GetComponent<Rigidbody>().AddForce(velocity * force, ForceMode.Impulse);
+        }
+    }
+
     #region ClientRpc Calls
 
     [ClientRpc]
@@ -118,6 +140,24 @@ public class PlayerStatusController : NetworkBehaviour
         this._health = newHealth;
         _healthBarTarget = new Vector3((newHealth / _maxHealth), HealthBar.localScale.y, HealthBar.localScale.z);
         HealthBar.localScale = _healthBarTarget;
+    }
+
+    [ClientRpc]
+    private void RpcPlayerDazed()
+    {
+        if (!_dead)
+        {
+            this.GetComponent<PlayerMovementController>().UpdatePlayerState(PlayerState.Dead);
+        }
+    }
+
+    [ClientRpc]
+    private void RpcPlayerUndazed()
+    {
+        if (!_dead)
+        {
+            this.GetComponent<PlayerMovementController>().UpdatePlayerState(PlayerState.Alive);
+        }
     }
 
     [ClientRpc]
@@ -141,6 +181,15 @@ public class PlayerStatusController : NetworkBehaviour
         PlayerRespawnHook(true, false);
     }
 
+    [Command]
+    private void CmdPlayerUndazed()
+    {
+        _dazed = false;
+        _dazedTimeStart = 0;
+
+        RpcPlayerUndazed();
+    }
+
     #endregion
 
     #region Hook Functions
@@ -152,6 +201,17 @@ public class PlayerStatusController : NetworkBehaviour
             this._dead = newValue;
             this._health = this._maxHealth;
             RpcPlayerRespawn();
+        }
+    }
+
+    public void PlayerUndazed()
+    {
+        if (_dazed)
+        {
+            if ((Time.time - _dazedTimeStart) > _dazeDuration)
+            {
+                CmdPlayerUndazed();
+            }
         }
     }
 
