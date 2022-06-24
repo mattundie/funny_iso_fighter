@@ -23,6 +23,8 @@ public class PlayerBodyPart : MonoBehaviour
             ExplosiveContact contact = collision.gameObject.GetComponent<ExplosiveContact>();
             PlayerStatusController status = _root.GetComponent<PlayerStatusController>();
 
+            status._effects.CreateBloodEffect(collision.GetContact(0).point, this.gameObject);
+
             if (contact)
                 if (contact._enabled)
                     if (!status._dazed)
