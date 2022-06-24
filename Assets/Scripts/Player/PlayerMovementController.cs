@@ -375,14 +375,12 @@ public class PlayerMovementController : NetworkBehaviour
     [ClientRpc]
     public void RpcApplyExplosiveForce(GameObject collision, float force, Vector3 velocity, float healthModifier)
     {
-        if (collision.layer == 7)
-        {
-            collision.GetComponent<PlayerMovementController>()._puppet.GetComponent<PuppetMaster>().state = PuppetMaster.State.Dead;
-            collision.GetComponent<PlayerStatusController>().ModifyHealth(healthModifier);
-            Invoke("DeadReset", _puppetBehaviour.minGetUpDuration);
 
-            Debug.Log($"{GetComponent<PlayerObjectController>().PlayerName} just schmacked {collision.GetComponent<PlayerObjectController>().PlayerName}");
-        }
+        collision.GetComponent<PlayerMovementController>()._puppet.GetComponent<PuppetMaster>().state = PuppetMaster.State.Dead;
+        collision.GetComponent<PlayerStatusController>().ModifyHealth(healthModifier);
+        Invoke("DeadReset", _puppetBehaviour.minGetUpDuration);
+
+        Debug.Log($"{GetComponent<PlayerObjectController>().PlayerName} just schmacked {collision.GetComponent<PlayerObjectController>().PlayerName}");
 
         collision.GetComponent<PlayerMovementController>()._puppet.transform.GetChild(0).GetComponent<Rigidbody>().AddForce(velocity * force, ForceMode.Impulse);
     }
