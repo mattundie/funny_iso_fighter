@@ -29,6 +29,7 @@ public class PlayerEffects : MonoBehaviour
         {
             _bloodInstance = Instantiate(_bloodPrefab, spawnLocation, Quaternion.identity);
             _bloodInstance.transform.parent = attachTo.transform;
+            _bloodInstance.GetComponent<ParticleSystem>().Play();
             _bleeding = true;
 
             Destroy(_bloodInstance,_bloodInstance.GetComponent<ParticleSystem>().main.duration + 0.15f);
