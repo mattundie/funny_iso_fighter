@@ -206,7 +206,7 @@ public class PlayerStatusController : NetworkBehaviour
 
     public void PlayerUndazed()
     {
-        if (_dazed)
+        if (_dazed && hasAuthority)
         {
             if ((Time.time - _dazedTimeStart) > _dazeDuration)
             {
