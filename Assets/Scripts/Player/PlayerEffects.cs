@@ -43,7 +43,7 @@ public class PlayerEffects : MonoBehaviour
             _bloodInstance = Instantiate(_bloodPrefab, spawnLocation, Quaternion.identity);
             _bloodInstance.transform.parent = attachTo.transform;
             _bloodInstance.GetComponent<ParticleSystem>().Play();
-            PlayAudio(_punchAudioClip);
+            PlayAudio(_punchAudioClip, 0);
             _bleeding = true;
 
             Destroy(_bloodInstance,_bloodInstance.GetComponent<ParticleSystem>().main.duration + 0.15f);
@@ -52,11 +52,18 @@ public class PlayerEffects : MonoBehaviour
 
     public void PlayerFishSound()
     {
-        PlayAudio(_fishAudioClip);
+        PlayAudio(_fishAudioClip, 0.25f);
     }
 
-    private void PlayAudio(AudioClip clip)
+    private void PlayAudio(AudioClip clip, float delay)
     {
+        StartCoroutine(AudioCoroutine(clip, delay));
+    }
+
+    private IEnumerator AudioCoroutine(AudioClip clip, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
         if (!_playerAudio.isPlaying)
         {
             _playerAudio.PlayOneShot(clip);
