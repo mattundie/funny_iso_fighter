@@ -10650,6 +10650,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _runParticleSystem: {fileID: 2374538506854280309}
   _bloodPrefab: {fileID: 5183225506178661763, guid: f92598277b330b844992d4d8fa866edf, type: 3}
+  _punchAudioClip: {fileID: 8300000, guid: 430cd9dde8132c648aed0742433628c4, type: 3}
+  _contactAudioClip: {fileID: 8300000, guid: 854465f15fcedb840b0495dc0d11f7ed, type: 3}
+  _runAudioClip: {fileID: 0}
+  _fishAudioClip: {fileID: 8300000, guid: fd30a36138bd82d43b527efabc1e6a14, type: 3}
   _bleeding: 0
   _bloodInstance: {fileID: 0}
 --- !u!82 &3218642881467739622
@@ -10708,7 +10712,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0

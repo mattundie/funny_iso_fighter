@@ -10,9 +10,22 @@ public class PlayerEffects : MonoBehaviour
     [Header("Prefabs")]
     public GameObject _bloodPrefab;
 
+    [Header("Audio Clips")]
+    public AudioClip _punchAudioClip;
+    public AudioClip _contactAudioClip;
+    public AudioClip _runAudioClip;
+    public AudioClip _fishAudioClip;
+
     [Header("Tracked Data")]
     [SerializeField] private bool _bleeding = false;
     [SerializeField] private GameObject _bloodInstance;
+
+    private AudioSource _playerAudio;
+
+    private void Start()
+    {
+        _playerAudio = GetComponent<AudioSource>();
+    }
 
     private void Update()
     {
@@ -30,9 +43,23 @@ public class PlayerEffects : MonoBehaviour
             _bloodInstance = Instantiate(_bloodPrefab, spawnLocation, Quaternion.identity);
             _bloodInstance.transform.parent = attachTo.transform;
             _bloodInstance.GetComponent<ParticleSystem>().Play();
+            PlayAudio(_punchAudioClip);
             _bleeding = true;
 
             Destroy(_bloodInstance,_bloodInstance.GetComponent<ParticleSystem>().main.duration + 0.15f);
+        }
+    }
+
+    public void PlayerFishSound()
+    {
+        PlayAudio(_fishAudioClip);
+    }
+
+    private void PlayAudio(AudioClip clip)
+    {
+        if (!_playerAudio.isPlaying)
+        {
+            _playerAudio.PlayOneShot(clip);
         }
     }
 }
