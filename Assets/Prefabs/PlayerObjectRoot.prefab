@@ -5359,7 +5359,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _enabled: 0
-  _explosiveForce: 10
+  _explosiveForce: 7
   _damage: -15
   _networkParent: {fileID: 1893189124}
 --- !u!1 &6629647040607410605
