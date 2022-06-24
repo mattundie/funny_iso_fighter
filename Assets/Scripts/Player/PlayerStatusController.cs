@@ -135,7 +135,7 @@ public class PlayerStatusController : NetworkBehaviour
     private void RpcHealthChanged(float newHealth)
     {
         this._health = newHealth;
-        _healthBarTarget = new Vector3((newHealth / _maxHealth), HealthBar.localScale.y, HealthBar.localScale.z);
+        this._healthBarTarget = new Vector3((newHealth / _maxHealth), HealthBar.localScale.y, HealthBar.localScale.z);
         HealthBar.localScale = _healthBarTarget;
     }
 
@@ -196,7 +196,7 @@ public class PlayerStatusController : NetworkBehaviour
         if (isServer)
         {
             this._dead = newValue;
-            this._health = this._maxHealth;
+            ModifyHealth(_maxHealth);
             RpcPlayerRespawn();
         }
     }
