@@ -18,7 +18,7 @@ public class PlayerBodyPart : MonoBehaviour
 
     void CheckForPlayerActionContact(Collision collision)
     {
-        if (collision.gameObject.layer == 7) // Ragdoll layer
+        if (collision.gameObject.layer == 7 && collision.transform.root.tag != "LocalPlayer") // Ragdoll layer
         {
             ExplosiveContact contact = collision.gameObject.GetComponent<ExplosiveContact>();
             PlayerStatusController status = _root.GetComponent<PlayerStatusController>();

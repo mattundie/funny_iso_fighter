@@ -29,7 +29,7 @@ public class PlayerStatusController : NetworkBehaviour
     [SerializeField] private float _dazeDuration = 2f;
     #endregion
 
-    [SyncVar] private float _dazedTimeStart = 0f;
+    private float _dazedTimeStart = 0f;
 
     public enum PlayerState
     {
@@ -114,18 +114,21 @@ public class PlayerStatusController : NetworkBehaviour
 
     public void PlayerActionContact(GameObject bodyPart, Vector3 velocity, float force, float damage)
     {
-        if (isServer)
+        if (!_dazed)
         {
-            _dazed = true;
-            _dazedTimeStart = Time.time;
+            if (isServer)
+            {
+                _dazed = true;
 
-            ModifyHealth(damage);
-            RpcPlayerDazed();
-        }
+                ModifyHealth(damage);
+                RpcPlayerDazed();
+            }
 
-        if (hasAuthority)
-        {
-            bodyPart.GetComponent<Rigidbody>().AddForce(velocity * force, ForceMode.Impulse);
+            if (hasAuthority)
+            {
+                _dazedTimeStart = Time.time;
+                bodyPart.GetComponent<Rigidbody>().AddForce(velocity * force, ForceMode.Impulse);
+            }
         }
     }
 
