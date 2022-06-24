@@ -116,6 +116,8 @@ public class PlayerStatusController : NetworkBehaviour
     {
         if (!_dazed)
         {
+            _dazedTimeStart = Time.time;
+
             if (isServer)
             {
                 _dazed = true;
@@ -126,7 +128,6 @@ public class PlayerStatusController : NetworkBehaviour
 
             if (hasAuthority)
             {
-                _dazedTimeStart = Time.time;
                 bodyPart.GetComponent<Rigidbody>().AddForce(velocity * force, ForceMode.Impulse);
             }
         }
@@ -185,7 +186,6 @@ public class PlayerStatusController : NetworkBehaviour
     private void CmdPlayerUndazed()
     {
         _dazed = false;
-        _dazedTimeStart = 0;
 
         RpcPlayerUndazed();
     }
