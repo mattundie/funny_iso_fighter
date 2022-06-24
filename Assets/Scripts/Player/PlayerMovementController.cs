@@ -382,7 +382,7 @@ public class PlayerMovementController : NetworkBehaviour
             Invoke("DeadReset", _puppetBehaviour.minGetUpDuration);
         }
 
-        collision.GetComponent<PlayerMovementController>()._puppet.GetComponent<Rigidbody>().AddForce(velocity * force, ForceMode.Impulse);
+        collision.GetComponent<PlayerMovementController>()._puppet.transform.GetChild(0).GetComponent<Rigidbody>().AddForce(velocity * force, ForceMode.Impulse);
     }
     #endregion
 
@@ -402,7 +402,7 @@ public class PlayerMovementController : NetworkBehaviour
         if(!isServer) { return; }
 
         if(targetCollision.gameObject.layer == 8 || targetCollision.gameObject.layer == 9)  // If ground or collision object, add force to direct transform
-            RpcApplyExplosiveForce(targetCollision.gameObject, force, velocity, healthModifier);
+            targetCollision.rigidbody.AddForce(velocity * force, ForceMode.Impulse);
         else
             RpcApplyExplosiveForce(targetCollision.transform.root.gameObject, force, velocity, healthModifier);
     }
