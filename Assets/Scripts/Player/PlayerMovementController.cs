@@ -15,7 +15,7 @@ public class PlayerMovementController : NetworkBehaviour
     [SerializeField] public Rigidbody _rb;
     [SerializeField] private Animator _animator;
     [SerializeField] private GameObject _playerModel;
-    [SerializeField] private PlayerInput _input;
+    [SerializeField] public PlayerInput _input;
     [SerializeField] public GameObject _puppet;
     [SerializeField] private BehaviourPuppet _puppetBehaviour;
     [SerializeField] private Transform _mouseTarget;

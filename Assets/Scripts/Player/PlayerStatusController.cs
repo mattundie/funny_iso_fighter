@@ -12,6 +12,7 @@ public class PlayerStatusController : NetworkBehaviour
     [Header("Components")]
     public Transform HealthBar;
     public PlayerAvatar _avatar;
+    public PlayerEffects _effects;
     #endregion
 
     #region Status Data
@@ -27,6 +28,7 @@ public class PlayerStatusController : NetworkBehaviour
     [SerializeField] private float _dazeDuration = 2f;
     #endregion
 
+    private PlayerMovementController _movement;
     private float _dazedTimeStart = 0f;
 
     public enum PlayerState
@@ -41,10 +43,12 @@ public class PlayerStatusController : NetworkBehaviour
     private void Start()
     {
         _health = _maxHealth;
+        _movement = _movement;
     }
 
     private void Update()
     {
+
         PlayerUndazed();
 
         if (_health == 0 && !_dead)
@@ -62,14 +66,13 @@ public class PlayerStatusController : NetworkBehaviour
 
         if(!hasAuthority) { return; }
 
-        if (GetComponent<PlayerMovementController>()._rb.transform.position.magnitude > 100f)
+        if (_movement._rb.transform.position.magnitude > 100f)
         {
             PlayerDeath();
             CmdPlayerRespawn();
         }
     }
 
-    [Client]
     private void PopulateHealthUI()
     {
         if (_health < 35)
@@ -81,6 +84,7 @@ public class PlayerStatusController : NetworkBehaviour
             HealthBar.gameObject.GetComponent<Image>().color = Color.green;
         }
     }
+
 
     public void ModifyHealth(float modifier)
     {
@@ -142,7 +146,7 @@ public class PlayerStatusController : NetworkBehaviour
     {
         if (!_dead)
         {
-            this.GetComponent<PlayerMovementController>().UpdatePlayerState(PlayerState.Dead);
+            this._movement.UpdatePlayerState(PlayerState.Dead);
         }
     }
 
@@ -151,20 +155,20 @@ public class PlayerStatusController : NetworkBehaviour
     {
         if (!_dead)
         {
-            this.GetComponent<PlayerMovementController>().UpdatePlayerState(PlayerState.Alive);
+            this._movement.UpdatePlayerState(PlayerState.Alive);
         }
     }
 
     [ClientRpc]
     private void RpcPlayerDeath()
     {
-      this.GetComponent<PlayerMovementController>().UpdatePlayerState(PlayerState.Dead);
+      this._movement.UpdatePlayerState(PlayerState.Dead);
     }
 
     [ClientRpc]
     private void RpcPlayerRespawn()
     {
-        this.GetComponent<PlayerMovementController>().UpdatePlayerState(PlayerState.Respawn);
+        this._movement.UpdatePlayerState(PlayerState.Respawn);
     }
     #endregion
 
