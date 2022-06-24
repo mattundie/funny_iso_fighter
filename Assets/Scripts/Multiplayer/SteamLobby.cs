@@ -12,7 +12,7 @@ public class SteamLobby : MonoBehaviour
     #region Callbacks
     protected Callback<LobbyCreated_t> LobbyCreated;
     protected Callback<GameLobbyJoinRequested_t> JoinRequested;
-    protected Callback<LobbyEnter_t> LobbyEntered;
+    protected Callback<LobbyEnter_t> LobbyEntered;    
     #endregion
 
     public ulong CurrentLobbyID;
@@ -36,6 +36,11 @@ public class SteamLobby : MonoBehaviour
     public void HostLobby()
     {
         SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypeFriendsOnly, manager.maxConnections);
+    }
+
+    public void LeaveLobby()
+    {
+        SteamMatchmaking.LeaveLobby((CSteamID)CurrentLobbyID);
     }
 
     private void OnLobbyCreated(LobbyCreated_t callback)

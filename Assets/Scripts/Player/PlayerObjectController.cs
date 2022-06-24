@@ -7,7 +7,7 @@ using Steamworks;
 
 public class PlayerObjectController : NetworkBehaviour
 {
-    #region player data
+    #region Session Data
     [SyncVar] public int ConnectionId;
     [SyncVar] public int PlayerIdNumber;
     [SyncVar] public ulong PlayerSteamId;
@@ -15,8 +15,10 @@ public class PlayerObjectController : NetworkBehaviour
     [SyncVar(hook = nameof(PlayerReadyUpdate))] public bool Ready;
     #endregion
 
+    public Vector3 _spawnPoint;
+
     private CustomNetworkManager manager;
-    private CustomNetworkManager Manager
+    public CustomNetworkManager Manager
     {
         get
         {
@@ -41,6 +43,8 @@ public class PlayerObjectController : NetworkBehaviour
         transform.tag = "LocalPlayer";
         transform.Find("PlayerObject").tag = "LocalCameraTarget";
         transform.Find("PuppetMaster").tag = "LocalRagdoll";
+
+        _spawnPoint = Manager.SpawnPoints[PlayerIdNumber - 1];
 
         if (SceneManager.GetActiveScene().name == "Lobby")
         {

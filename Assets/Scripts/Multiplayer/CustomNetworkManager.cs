@@ -9,6 +9,7 @@ public class CustomNetworkManager : NetworkManager
 {
     [SerializeField] private PlayerObjectController GamePlayerPrefab;
     public Material[] PlayerMaterials;
+    public Vector3[] SpawnPoints;
     public List<PlayerObjectController> GamePlayers { get; } = new List<PlayerObjectController>();
 
     // Called every time a player is added to the server
@@ -23,11 +24,15 @@ public class CustomNetworkManager : NetworkManager
 
             NetworkServer.AddPlayerForConnection(conn, gamePlayerInstance.gameObject);
         }
-
     }
 
     public void StartGame(string SceneName)
     {
         ServerChangeScene(SceneName);
+    }
+
+    public void LeaveLobby()
+    {
+        SceneManager.LoadScene(0);
     }
 }

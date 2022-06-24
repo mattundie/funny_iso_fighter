@@ -127,8 +127,7 @@ public class PlayerMovementController : NetworkBehaviour
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
         if (!_enabled) {
             if (scene.name.Contains("Game")) {
-                // Move player to spawn location
-                Vector3 spawnPos = new Vector3(UnityEngine.Random.Range(-3, 3), 2f, UnityEngine.Random.Range(-3, 3));
+                Vector3 spawnPos = this.GetComponent<PlayerObjectController>()._spawnPoint;
                 _rb.transform.position = spawnPos;
                 _puppet.transform.position = spawnPos;
 
@@ -148,7 +147,7 @@ public class PlayerMovementController : NetworkBehaviour
         {
             _puppet.SetActive(false);
 
-            Vector3 spawnPos = new Vector3(UnityEngine.Random.Range(-3, 3), 2f, UnityEngine.Random.Range(-3, 3));
+            Vector3 spawnPos = this.GetComponent<PlayerObjectController>()._spawnPoint;
             _rb.transform.position = spawnPos;
             _puppet.transform.position = spawnPos;
 

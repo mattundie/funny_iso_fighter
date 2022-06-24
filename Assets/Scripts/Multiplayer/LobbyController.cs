@@ -14,7 +14,7 @@ public class LobbyController : MonoBehaviour
 
     #region UI Elements
     public TMP_Text LobbyNameText;
-
+    public Button LeaveLobbyButton;
     #endregion
 
     #region Player Data
@@ -53,6 +53,12 @@ public class LobbyController : MonoBehaviour
     private void Awake()
     {
         if(Instance == null) { Instance = this; }
+    }
+
+    private void Start()
+    {
+        SteamLobby lobby = GameObject.FindGameObjectWithTag("NetworkManager").GetComponent<SteamLobby>();
+        LeaveLobbyButton.onClick.AddListener(() => lobby.LeaveLobby());
     }
 
     public void ReadyPlayer()
