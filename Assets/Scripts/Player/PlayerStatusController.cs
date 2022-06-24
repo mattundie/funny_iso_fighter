@@ -43,7 +43,7 @@ public class PlayerStatusController : NetworkBehaviour
     private void Start()
     {
         _health = _maxHealth;
-        _movement = _movement;
+        _movement = GetComponent<PlayerMovementController>();
     }
 
     private void Update()
