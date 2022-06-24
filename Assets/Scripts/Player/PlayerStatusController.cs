@@ -100,7 +100,7 @@ public class PlayerStatusController : NetworkBehaviour
             RpcHealthChanged(0);
     }
 
-    private void PlayerDeath()
+    public void PlayerDeath()
     {
         if (!isServer) { return; }
 

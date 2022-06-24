@@ -162,9 +162,14 @@ public class PlayerMovementController : NetworkBehaviour
             _enabled = false;
 
             _puppet.GetComponent<PuppetMaster>().state = PuppetMaster.State.Dead;
+
+            Invoke("DeadReset", _puppetBehaviour.minGetUpDuration);
         }
         else if(state == PlayerStatusController.PlayerState.Alive)
         {
+            _rb.isKinematic = false;
+            _enabled = true;
+
             _puppet.GetComponent<PuppetMaster>().state = PuppetMaster.State.Alive;
         }
     }
@@ -373,12 +378,9 @@ public class PlayerMovementController : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void RpcApplyExplosiveForce(GameObject collision, float force, Vector3 velocity, float healthModifier)
+    public void RpcApplyExplosiveForceToPlayer(GameObject collision, float force, Vector3 velocity, float healthModifier)
     {
-
-        collision.GetComponent<PlayerMovementController>()._puppet.GetComponent<PuppetMaster>().state = PuppetMaster.State.Dead;
         collision.GetComponent<PlayerStatusController>().ModifyHealth(healthModifier);
-        Invoke("DeadReset", _puppetBehaviour.minGetUpDuration);
 
         Debug.Log($"{GetComponent<PlayerObjectController>().PlayerName} just schmacked {collision.GetComponent<PlayerObjectController>().PlayerName}");
 
@@ -403,10 +405,10 @@ public class PlayerMovementController : NetworkBehaviour
 
         if (targetCollision.gameObject.layer == 8 || targetCollision.gameObject.layer == 9)  // If ground or collision object, add force to direct transform
             targetCollision.rigidbody.AddForce(velocity * force, ForceMode.Impulse);
-        else
+        else if (targetCollision.gameObject.layer == 7)     // If player ragdoll layer
         {
-            //targetCollision.rigidbody.AddForce(velocity * force, ForceMode.Impulse);
-            RpcApplyExplosiveForce(targetCollision.transform.root.gameObject, force, velocity, healthModifier);
+            targetCollision.transform.root.GetComponent<PlayerStatusController>().PlayerDeath();
+            RpcApplyExplosiveForceToPlayer(targetCollision.transform.root.gameObject, force, velocity, healthModifier);
         }
     }
     #endregion
