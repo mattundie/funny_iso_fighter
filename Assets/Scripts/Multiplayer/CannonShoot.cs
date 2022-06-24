@@ -46,6 +46,7 @@ public class CannonShoot : NetworkBehaviour
     {
         _ballInstance = Instantiate(_cannonBall, _spawnPos.position, _spawnPos.rotation);
         Destroy(_ballInstance, _destroyDelay);
+        _ballInstance.GetComponent<Rigidbody>().isKinematic = false;
         GetComponent<AudioSource>().Play();
     }
 }
