@@ -49,10 +49,10 @@ public class PlayerMovementController : NetworkBehaviour
     [SerializeField] private bool _jumpWasPressedLastFrame = false;
 
     [Header("Monitored Data")]
-    [SerializeField] [SyncVar] private bool _isMoving = false;
-    [SerializeField] [SyncVar] private bool _isJumping = false;
+    [SerializeField] [SyncVar] public bool _isMoving = false;
+    [SerializeField] [SyncVar] public bool _isJumping = false;
     [SerializeField] [SyncVar] public bool _isActing = false;
-    [SerializeField] [SyncVar] private bool _grounded;
+    [SerializeField] [SyncVar] public bool _grounded;
     [SerializeField] [SyncVar] private bool _enabled;
     [SerializeField] private ActionState _currentActionState;
     
@@ -180,6 +180,7 @@ public class PlayerMovementController : NetworkBehaviour
         if (didRaycastHit)
         {
             _grounded = true;
+            CmdIsGrounded(true);
 
             if (_puppetBehaviour.state != BehaviourPuppet.State.Puppet || _isJumping)
                 return;
@@ -213,6 +214,7 @@ public class PlayerMovementController : NetworkBehaviour
         else
         {
             _grounded = false;
+            CmdIsGrounded(false);
         }
     }
 
@@ -227,6 +229,7 @@ public class PlayerMovementController : NetworkBehaviour
         if(_puppetBehaviour.state != BehaviourPuppet.State.Puppet)
         {
             _isMoving = false;
+            CmdIsMoving(false);
             return;
         }
 
@@ -236,10 +239,12 @@ public class PlayerMovementController : NetworkBehaviour
                 _rb.velocity = _rb.velocity * 0.9f;
 
             _isMoving = false;
+            CmdIsMoving(false);
             return;
         }
 
         _isMoving = true;
+        CmdIsMoving(true);
 
         if (_raycastHit.rigidbody != null)
             groundVel = _raycastHit.rigidbody.velocity;
@@ -384,6 +389,18 @@ public class PlayerMovementController : NetworkBehaviour
         _isActing = true;
 
         RpcPlayerAction();
+    }
+
+    [Command]
+    void CmdIsMoving(bool moving)
+    {
+        _isMoving = moving;
+    }
+
+    [Command]
+    void CmdIsGrounded(bool grounded)
+    {
+        _grounded = grounded;
     }
     #endregion
 

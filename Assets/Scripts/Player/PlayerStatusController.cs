@@ -48,6 +48,7 @@ public class PlayerStatusController : NetworkBehaviour
 
     private void Update()
     {
+        PlayerRunEffects();
 
         PlayerUndazed();
 
@@ -85,6 +86,27 @@ public class PlayerStatusController : NetworkBehaviour
         }
     }
 
+    private void PlayerRunEffects()
+    {
+        if (_movement._isMoving)
+        {
+            if (_movement._grounded)
+            {
+                if (!_effects._runParticleSystem.isPlaying || _effects._runParticleSystem.isStopped)
+                {
+                    _effects._runParticleSystem.Play();
+                }
+            }
+            else
+            {
+                _effects._runParticleSystem.Stop();
+            }
+        }
+        else
+        {
+            _effects._runParticleSystem.Stop();
+        }
+    }
 
     public void ModifyHealth(float modifier)
     {
