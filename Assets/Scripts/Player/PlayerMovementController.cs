@@ -377,12 +377,12 @@ public class PlayerMovementController : NetworkBehaviour
     {
         if (collision.layer == 7)
         {
-            collision.transform.root.GetComponent<PlayerMovementController>()._puppet.GetComponent<PuppetMaster>().state = PuppetMaster.State.Dead;
-            collision.transform.root.GetComponent<PlayerStatusController>().ModifyHealth(healthModifier);
+            collision.GetComponent<PlayerMovementController>()._puppet.GetComponent<PuppetMaster>().state = PuppetMaster.State.Dead;
+            collision.GetComponent<PlayerStatusController>().ModifyHealth(healthModifier);
             Invoke("DeadReset", _puppetBehaviour.minGetUpDuration);
         }
 
-        collision.GetComponent<Rigidbody>().AddForce(velocity * force, ForceMode.Impulse);
+        collision.GetComponent<PlayerMovementController>()._puppet.GetComponent<Rigidbody>().AddForce(velocity * force, ForceMode.Impulse);
     }
     #endregion
 
@@ -401,7 +401,10 @@ public class PlayerMovementController : NetworkBehaviour
     {
         if(!isServer) { return; }
 
-        targetCollision.transform.root.GetComponent<PlayerMovementController>().RpcApplyExplosiveForce(targetCollision.gameObject, force, velocity, healthModifier);
+        if(targetCollision.gameObject.layer == 8 || targetCollision.gameObject.layer == 9)  // If ground or collision object, add force to direct transform
+            RpcApplyExplosiveForce(targetCollision.gameObject, force, velocity, healthModifier);
+        else
+            RpcApplyExplosiveForce(targetCollision.transform.root.gameObject, force, velocity, healthModifier);
     }
     #endregion
 
