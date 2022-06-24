@@ -32,12 +32,6 @@ public class CannonShoot : NetworkBehaviour
 
         RpcSpawnCannonball();
 
-        if (_ballInstance)
-        {
-            _ballInstance.GetComponent<Rigidbody>().isKinematic = false;
-            _ballInstance.GetComponent<Rigidbody>().AddForce(_spawnPos.forward * _shootForce, ForceMode.Impulse);
-        }
-
         StartCoroutine(ShootLoop());
     }
 
@@ -47,6 +41,7 @@ public class CannonShoot : NetworkBehaviour
         _ballInstance = Instantiate(_cannonBall, _spawnPos.position, _spawnPos.rotation);
         Destroy(_ballInstance, _destroyDelay);
         _ballInstance.GetComponent<Rigidbody>().isKinematic = false;
+        _ballInstance.GetComponent<Rigidbody>().AddForce(_spawnPos.forward * _shootForce, ForceMode.Impulse);
         GetComponent<AudioSource>().Play();
     }
 }
