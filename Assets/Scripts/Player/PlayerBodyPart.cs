@@ -18,14 +18,20 @@ public class PlayerBodyPart : MonoBehaviour
 
     void CheckForPlayerActionContact(Collision collision)
     {
-        if(collision.gameObject.layer == 7 || collision.gameObject.layer == 9)  // If ragdoll or collision object play noise
+        PlayerStatusController status = _root.GetComponent<PlayerStatusController>();
+
+        if (collision.gameObject.layer == 7 || collision.gameObject.layer == 9) // If ragdoll or collision object play noise
+        {
             if (GetComponent<AudioSource>())
                 GetComponent<AudioSource>().Play();
+
+            if (collision.transform.tag == "Projectile")
+                status.ModifyHealth(-1f);
+        }
 
         if (collision.gameObject.layer == 7 && collision.gameObject.transform.root != _root) // If ragdoll layer and not yourself
         {
             ExplosiveContact contact = collision.gameObject.GetComponent<ExplosiveContact>();
-            PlayerStatusController status = _root.GetComponent<PlayerStatusController>();
 
             if (contact)
                 if (contact._enabled)

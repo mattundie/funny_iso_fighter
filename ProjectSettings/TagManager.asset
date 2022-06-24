@@ -8,6 +8,7 @@ TagManager:
   - LocalCameraTarget
   - LocalRagdoll
   - NetworkManager
+  - Projectile
   layers:
   - Default
   - TransparentFX
