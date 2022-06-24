@@ -60,10 +60,7 @@ public class PlayerStatusController : NetworkBehaviour
 
     private void FixedUpdate()
     {
-        if (isClient)
-        {
-            PopulateHealthUI();
-        }
+        PopulateHealthUI();
 
         if(!hasAuthority) { return; }
 
@@ -206,7 +203,7 @@ public class PlayerStatusController : NetworkBehaviour
 
     public void PlayerUndazed()
     {
-        if (_dazed && hasAuthority)
+        if (isClient && _dazed)
         {
             if ((Time.time - _dazedTimeStart) > _dazeDuration)
             {

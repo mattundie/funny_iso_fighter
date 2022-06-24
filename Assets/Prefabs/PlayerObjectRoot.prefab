@@ -5505,7 +5505,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _enabled: 0
   _explosiveForce: 7
-  _damage: -15
+  _damage: -20
 --- !u!1 &6629647040607410605
 GameObject:
   m_ObjectHideFlags: 0
