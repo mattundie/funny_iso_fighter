@@ -11150,6 +11150,7 @@ MonoBehaviour:
   _contactAudioClip: {fileID: 8300000, guid: 854465f15fcedb840b0495dc0d11f7ed, type: 3}
   _runAudioClip: {fileID: 0}
   _fishAudioClip: {fileID: 8300000, guid: fd30a36138bd82d43b527efabc1e6a14, type: 3}
+  _moanAudioClip: {fileID: 8300000, guid: 01ed16ea4d4f1aa4dbddcc1921f0eae6, type: 3}
   _bleeding: 0
   _bloodInstance: {fileID: 0}
 --- !u!82 &3218642881467739622
