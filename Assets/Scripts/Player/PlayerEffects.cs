@@ -15,6 +15,7 @@ public class PlayerEffects : MonoBehaviour
     public AudioClip _contactAudioClip;
     public AudioClip _runAudioClip;
     public AudioClip _fishAudioClip;
+    public AudioClip _moanAudioClip;
 
     [Header("Tracked Data")]
     [SerializeField] private bool _bleeding = false;
@@ -53,6 +54,11 @@ public class PlayerEffects : MonoBehaviour
     public void PlayerFishSound()
     {
         PlayAudio(_fishAudioClip, 0.25f);
+    }
+
+    public void PlayerAnimeMoan()
+    {
+        PlayAudio(_moanAudioClip, 0.25f);
     }
 
     public void PlayerPunchSound()

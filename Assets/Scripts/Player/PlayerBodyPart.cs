@@ -39,7 +39,11 @@ public class PlayerBodyPart : MonoBehaviour
                     {
                         status._effects.CreateBloodEffect(collision.GetContact(0).point, this.gameObject);
                         status.PlayerActionContact(this.gameObject, collision.rigidbody.velocity, contact._explosiveForce, contact._damage);
-                        collision.transform.root.GetComponent<PlayerStatusController>()._effects.PlayerFishSound();
+
+                        if(collision.transform.root.GetComponent<PlayerObjectController>().PlayerIdNumber % 2 == 1)
+                            collision.transform.root.GetComponent<PlayerStatusController>()._effects.PlayerFishSound();
+                        else
+                            collision.transform.root.GetComponent<PlayerStatusController>()._effects.PlayerAnimeMoan();
                     }
         }
     }

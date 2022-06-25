@@ -438,7 +438,7 @@ Transform:
   m_GameObject: {fileID: 73824823}
   m_LocalRotation: {x: 0.70710677, y: 0, z: 0, w: 0.70710677}
   m_LocalPosition: {x: 39.54, y: 9.27, z: -4.03}
-  m_LocalScale: {x: 0.8076096, y: 5.5523252, z: 0.64797914}
+  m_LocalScale: {x: 1.7464557, y: 5.5523252, z: 0.64797914}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1343910754}
@@ -1321,7 +1321,7 @@ Transform:
   m_GameObject: {fileID: 328209819}
   m_LocalRotation: {x: 0.5009772, y: -0.49902093, z: 0.49902093, w: 0.5009772}
   m_LocalPosition: {x: 37.48, y: 9.27, z: -8.95}
-  m_LocalScale: {x: 0.8076096, y: 5.5523252, z: 0.64797914}
+  m_LocalScale: {x: 1.6790204, y: 5.5523252, z: 0.64797914}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1343910754}
@@ -2956,7 +2956,7 @@ Transform:
   m_GameObject: {fileID: 1345826021}
   m_LocalRotation: {x: 0.5009772, y: -0.49902093, z: 0.49902093, w: 0.5009772}
   m_LocalPosition: {x: 37.08, y: 9.27, z: 0.81}
-  m_LocalScale: {x: 0.8076096, y: 0.79886854, z: 0.64797914}
+  m_LocalScale: {x: 1.8161526, y: 1.2766718, z: 0.64797914}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1343910754}
@@ -3366,6 +3366,7 @@ GameObject:
   - component: {fileID: 1550421181}
   - component: {fileID: 1550421180}
   - component: {fileID: 1550421188}
+  - component: {fileID: 1550421189}
   m_Layer: 9
   m_Name: Swing
   m_TagString: Untagged
@@ -3672,6 +3673,41 @@ MonoBehaviour:
   showOverlay: 0
   overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
   target: {fileID: 72762218}
+--- !u!114 &1550421189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1550421178}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 734b48bea0b204338958ee3d885e11f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  clientAuthority: 0
+  sendInterval: 0.05
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 0
+  bufferTimeMultiplier: 1
+  bufferSizeLimit: 64
+  catchupThreshold: 4
+  catchupMultiplier: 0.1
+  onlySyncOnChange: 1
+  bufferResetMultiplier: 5
+  positionSensitivity: 0.01
+  rotationSensitivity: 0.01
+  scaleSensitivity: 0.01
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+  target: {fileID: 1580721576}
 --- !u!1 &1573079923
 GameObject:
   m_ObjectHideFlags: 0
