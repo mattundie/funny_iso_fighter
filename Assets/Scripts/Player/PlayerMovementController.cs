@@ -147,7 +147,7 @@ public class PlayerMovementController : NetworkBehaviour
         {
             _puppet.SetActive(false);
 
-            Vector3 spawnPos = this.GetComponent<PlayerObjectController>()._spawnPoint;
+            Vector3 spawnPos = Vector3.zero;
             _rb.transform.position = spawnPos;
             _puppet.transform.position = spawnPos;
 
