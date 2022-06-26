@@ -208,7 +208,12 @@ public class PlayerMovementController : NetworkBehaviour
 
             if (hitBody != null)
             {
+                Vector3 force = rayDir * -springForce;
+                Vector3 location = _raycastHit.point;
                 hitBody.AddForceAtPosition(rayDir * -springForce, _raycastHit.point);
+
+                if(!isServer && hitBody.GetComponent<NetworkIdentity>())
+                    CmdAddForceAtPosition(hitBody.gameObject, force, location);
             }
         }
         else
@@ -401,6 +406,11 @@ public class PlayerMovementController : NetworkBehaviour
     void CmdIsGrounded(bool grounded)
     {
         _grounded = grounded;
+    }
+
+    [Command]
+    void CmdAddForceAtPosition(GameObject hitBody, Vector3 force, Vector3 location) {
+        hitBody.GetComponent<Rigidbody>().AddForceAtPosition(force, location);
     }
     #endregion
 

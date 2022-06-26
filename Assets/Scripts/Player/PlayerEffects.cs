@@ -53,12 +53,12 @@ public class PlayerEffects : MonoBehaviour
 
     public void PlayerFishSound()
     {
-        PlayAudio(_fishAudioClip, 0.25f);
+        PlayAudio(_fishAudioClip, 0.1f);
     }
 
     public void PlayerAnimeMoan()
     {
-        PlayAudio(_moanAudioClip, 0.25f);
+        PlayAudio(_moanAudioClip, 0.1f);
     }
 
     public void PlayerPunchSound()
