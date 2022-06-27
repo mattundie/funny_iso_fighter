@@ -67,7 +67,7 @@ public class PlayerStatusController : NetworkBehaviour
 
         if(!hasAuthority) { return; }
 
-        if (_movement._rb.transform.position.magnitude > 100f)
+        if (_movement._rb.transform.position.magnitude > 150f)
         {
             PlayerDeath();
             CmdPlayerRespawn();
