@@ -234,7 +234,10 @@ public class PlayerMovementController : NetworkBehaviour
         if(_puppetBehaviour.state != BehaviourPuppet.State.Puppet)
         {
             _isMoving = false;
-            CmdIsMoving(false);
+
+            if(!isServer)
+                CmdIsMoving(false);
+
             return;
         }
 
@@ -244,7 +247,10 @@ public class PlayerMovementController : NetworkBehaviour
                 _rb.velocity = _rb.velocity * 0.9f;
 
             _isMoving = false;
-            CmdIsMoving(false);
+
+            if (!isServer)
+                CmdIsMoving(false);
+
             return;
         }
 
