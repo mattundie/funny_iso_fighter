@@ -21,23 +21,25 @@ public class GlizzyGun : Weapon
 
     private void Start() {
         _rb = this.GetComponent<Rigidbody>();
+        _acting = false;
+
+        Preload();
+    }
+
+    private void Update() {
+        Drop();
     }
 
     public override void Preload() {
         _magazine = new GameObject[_maxAmmo];
 
         for(int i=0; i < _maxAmmo; i++) {
-            _magazine[i] = GameObject.Instantiate(_projectilePrefab, this.transform.position, _spawnPoint.rotation);
+            _magazine[i] = GameObject.Instantiate(_projectilePrefab, _spawnPoint.transform.position, _spawnPoint.rotation);
+            _magazine[i].transform.parent = this.transform;
             _magazine[i].SetActive(false);
         }
 
         Debug.Log($"Preloaded {this.name}");
-    }
-
-    public override void Pickup(Transform parent) {
-        transform.position = parent.position;
-        transform.rotation = parent.rotation;
-        transform.parent = parent;
     }
 
     public override void Action() {
