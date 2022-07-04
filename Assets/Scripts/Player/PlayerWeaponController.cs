@@ -29,13 +29,21 @@ public class PlayerWeaponController : NetworkBehaviour
     }
 
     void CheckForWeapon() {
-        // If you have a weapon already, or the interact object is not a weapon, return;
-        if (_hasWeapon || _status._collisionDetection._interactObject.tag != "Weapon")
-            return;
+        var collDetect = _status._collisionDetection;
+        
+        if (_hasWeapon) {
+            if (_movement._input._weaponPressed) {
+                if(_equippedWeapon != null) {
+                    _equippedWeapon.GetComponent<Weapon>().Action();
+                }
+            }
 
-        if (_status._collisionDetection._interactAvailable) {
+            return;
+        }
+
+        if (collDetect.InteractAvailable && collDetect.InteractObject.CompareTag("Weapon")) {
             if (_movement._input._interactPressed) {
-                _equippedWeapon = _status._collisionDetection._interactObject;
+                _equippedWeapon = _status._collisionDetection.InteractObject;
                 _equippedWeapon.GetComponent<Weapon>().Pickup(_equipLocation);
                 _hasWeapon = true;
             }

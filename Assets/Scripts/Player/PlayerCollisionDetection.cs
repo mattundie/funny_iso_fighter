@@ -5,21 +5,21 @@ using UnityEngine;
 public class PlayerCollisionDetection : MonoBehaviour
 {
     [Header("Status Variables:")]
-    public bool _interactAvailable = false;
-    public GameObject _interactObject;
+    public bool InteractAvailable = false;
+    public GameObject InteractObject;
 
 
     private void OnTriggerEnter(Collider collision) {
-        if(collision.transform.tag == "Weapon") {
-            _interactAvailable = true;
-            _interactObject = collision.gameObject;
+        if(collision.transform.CompareTag("Weapon")) {
+            InteractAvailable = true;
+            InteractObject = collision.gameObject;
         }
     }
 
     private void OnTriggerExit(Collider collision) {
-        if(collision.transform.tag == "Weapon") {
-            _interactAvailable = false;
-            _interactObject = null;
+        if(collision.transform.CompareTag("Weapon")) {
+            InteractAvailable = false;
+            InteractObject = null;
         }
     }
 }

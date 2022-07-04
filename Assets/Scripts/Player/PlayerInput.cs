@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerInput : MonoBehaviour {
     public KeyCode[] _jumpInput = { KeyCode.Space, KeyCode.JoystickButton0 };
     public KeyCode[] _actionInput = { KeyCode.Mouse0, KeyCode.JoystickButton1 };
-    public KeyCode[] _weaponInput = { KeyCode.Mouse1, KeyCode.Joystick1Button10 };
+    public KeyCode[] _weaponInput = { KeyCode.F, KeyCode.Joystick1Button10 };
     public KeyCode[] _interactInput = { KeyCode.E, KeyCode.JoystickButton1 };
     public Vector3 _moveInput = Vector3.zero;
 
@@ -31,6 +31,7 @@ public class PlayerInput : MonoBehaviour {
         ActionDetection();
         MoveDetection();
         InteractDetection();
+        WeaponDetection();
     }
 
     public bool IsJumpInput(InputType type) {
@@ -106,35 +107,21 @@ public class PlayerInput : MonoBehaviour {
         }
     }
 
-    public bool IsInteractInput(InputType type) {
-        if (type == InputType.Down) {
-            foreach (var i in _interactInput)
-                if (Input.GetKeyDown(i))
-                    return true;
-            return false;
-        }
-        else if (type == InputType.Hold) {
-            foreach (var i in _interactInput)
-                if (Input.GetKey(i))
-                    return true;
-            return false;
-        }
-        else if (type == InputType.Up) {
-            foreach (var i in _interactInput)
-                if (Input.GetKeyUp(i))
-                    return true;
-            return false;
-        }
-
-        return false;
-    }
-
     void InteractDetection() {
         foreach (var i in _interactInput) {
             if (Input.GetKeyDown(i) || Input.GetKey(i))
                 _interactPressed = true;
             else if (Input.GetKeyUp(i))
                 _interactPressed = false;
+        }
+    }
+
+    void WeaponDetection() {
+        foreach (var i in _weaponInput) {
+            if (Input.GetKeyDown(i) || Input.GetKey(i))
+                _weaponPressed = true;
+            else if (Input.GetKeyUp(i))
+                _weaponPressed = false;
         }
     }
 
