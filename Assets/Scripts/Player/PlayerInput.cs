@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class PlayerInput : MonoBehaviour {
     public KeyCode[] _jumpInput = { KeyCode.Space, KeyCode.JoystickButton0 };
-    public KeyCode[] _actionInput = { KeyCode.Mouse0, KeyCode.JoystickButton1 };
-    public KeyCode[] _weaponInput = { KeyCode.F, KeyCode.Joystick1Button10 };
+    public KeyCode[] _actionInput = { KeyCode.Mouse1, KeyCode.JoystickButton1 };
+    public KeyCode[] _weaponInput = { KeyCode.Mouse0, KeyCode.Joystick1Button10 };
     public KeyCode[] _interactInput = { KeyCode.E, KeyCode.JoystickButton1 };
     public Vector3 _moveInput = Vector3.zero;
 
