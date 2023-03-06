@@ -5,14 +5,12 @@ using UnityEngine;
 public class PlayerInput : MonoBehaviour {
     public KeyCode[] _jumpInput = { KeyCode.Space, KeyCode.JoystickButton0 };
     public KeyCode[] _actionInput = { KeyCode.Mouse1, KeyCode.JoystickButton1 };
-    public KeyCode[] _weaponInput = { KeyCode.Mouse0, KeyCode.Joystick1Button10 };
     public KeyCode[] _interactInput = { KeyCode.E, KeyCode.JoystickButton1 };
     public Vector3 _moveInput = Vector3.zero;
 
     public bool _jumpPressed = false;
     public bool _actionPressed = false;
     public bool _movePressed = false;
-    public bool _weaponPressed = false;
     public bool _interactPressed = false;
 
     private float _jumpTimeout = 0.2f;
@@ -31,7 +29,6 @@ public class PlayerInput : MonoBehaviour {
         ActionDetection();
         MoveDetection();
         InteractDetection();
-        WeaponDetection();
     }
 
     public bool IsJumpInput(InputType type) {
@@ -113,15 +110,6 @@ public class PlayerInput : MonoBehaviour {
                 _interactPressed = true;
             else if (Input.GetKeyUp(i))
                 _interactPressed = false;
-        }
-    }
-
-    void WeaponDetection() {
-        foreach (var i in _weaponInput) {
-            if (Input.GetKeyDown(i) || Input.GetKey(i))
-                _weaponPressed = true;
-            else if (Input.GetKeyUp(i))
-                _weaponPressed = false;
         }
     }
 

@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Mirror;
 using System.Linq;
 using UnityEngine.SceneManagement;
 using UnityEngine.Animations.Rigging;
@@ -9,7 +8,7 @@ using RootMotion.Dynamics;
 using RootMotion.FinalIK;
 using System;
 
-public class PlayerMovementController : NetworkBehaviour
+public class PlayerMovementController : MonoBehaviour
 {
     [Header("Components")]
     [SerializeField] public Rigidbody _rb;
@@ -21,7 +20,6 @@ public class PlayerMovementController : NetworkBehaviour
     [SerializeField] private Transform _mouseTarget;
     [SerializeField] private Transform _raycastCenter;
     [SerializeField] private LayerMask _raycastLayers;
-    [SerializeField] private ExplosiveContact[] _explosiveContacts;
 
     [Header("Move Settings")]
     [SerializeField] private float _maxSpeed = 8f;
@@ -49,14 +47,13 @@ public class PlayerMovementController : NetworkBehaviour
     [SerializeField] private bool _jumpWasPressedLastFrame = false;
 
     [Header("Monitored Data")]
-    [SerializeField] [SyncVar] public bool _isMoving = false;
-    [SerializeField] [SyncVar] public bool _isJumping = false;
-    [SerializeField] [SyncVar] public bool _isActing = false;
-    [SerializeField] [SyncVar] public bool _grounded;
-    [SerializeField] [SyncVar] private bool _enabled;
+    [SerializeField] public bool _isMoving = false;
+    [SerializeField] public bool _isJumping = false;
+    [SerializeField] public bool _isActing = false;
+    [SerializeField] public bool _grounded;
+    [SerializeField] private bool _enabled;
     [SerializeField] private ActionState _currentActionState;
     
-    private PlayerStatusController _playerStatus;
 
     private enum ActionState
     {
@@ -70,36 +67,25 @@ public class PlayerMovementController : NetworkBehaviour
 
     private void Start()
     {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-
         _currentActionState = ActionState.melee;
-        _playerStatus = this.GetComponent<PlayerStatusController>();
-
-        DisablePlayer();
-
-        if (!hasAuthority)
-        {
-            _rb.gameObject.GetComponent<AimIK>().enabled = false;
-        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!_enabled || !hasAuthority) { return; }
+        if (!_enabled) { return; }
 
         Animate();
 
         if (_puppetBehaviour.state == BehaviourPuppet.State.Puppet)
         {
             Rotate();
-            Action();
         }
     }
 
     private void FixedUpdate()
     {
-        if (!_enabled || !hasAuthority) { return; }
+        if (!_enabled) { return; }
 
         Jump();
         Hover();
@@ -108,7 +94,6 @@ public class PlayerMovementController : NetworkBehaviour
 
     private void DisablePlayer()
     {
-        _playerStatus.HealthBar.parent.gameObject.SetActive(false);
         _playerModel.SetActive(false);
         _puppet.SetActive(false);
         _rb.isKinematic = true;
@@ -117,28 +102,10 @@ public class PlayerMovementController : NetworkBehaviour
 
     private void EnablePlayer()
     {
-        _playerStatus.HealthBar.parent.gameObject.SetActive(true);
         _rb.isKinematic = false;
         _playerModel.SetActive(true);
         _puppet.SetActive(true);
         _enabled = true;
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
-        if (!_enabled) {
-            if (scene.name.Contains("Game")) {
-                Vector3 spawnPos = this.GetComponent<PlayerObjectController>()._spawnPoint;
-                _rb.transform.position = spawnPos;
-                _puppet.transform.position = spawnPos;
-
-                EnablePlayer();
-            }
-        }
-        else {
-            if (!scene.name.Contains("Game")) {
-                DisablePlayer();
-            }
-        }
     }
 
     public void UpdatePlayerState(PlayerStatusController.PlayerState state)
@@ -180,7 +147,6 @@ public class PlayerMovementController : NetworkBehaviour
         if (didRaycastHit)
         {
             _grounded = true;
-            CmdIsGrounded(true);
 
             if (_puppetBehaviour.state != BehaviourPuppet.State.Puppet || _isJumping)
                 return;
@@ -211,15 +177,11 @@ public class PlayerMovementController : NetworkBehaviour
                 Vector3 force = rayDir * -springForce;
                 Vector3 location = _raycastHit.point;
                 hitBody.AddForceAtPosition(rayDir * -springForce, _raycastHit.point);
-
-                if(!isServer && hitBody.GetComponent<NetworkIdentity>())
-                    CmdAddForceAtPosition(hitBody.gameObject, force, location);
             }
         }
         else
         {
             _grounded = false;
-            CmdIsGrounded(false);
         }
     }
 
@@ -235,9 +197,6 @@ public class PlayerMovementController : NetworkBehaviour
         {
             _isMoving = false;
 
-            if(!isServer)
-                CmdIsMoving(false);
-
             return;
         }
 
@@ -248,14 +207,10 @@ public class PlayerMovementController : NetworkBehaviour
 
             _isMoving = false;
 
-            if (!isServer)
-                CmdIsMoving(false);
-
             return;
         }
 
         _isMoving = true;
-        CmdIsMoving(true);
 
         if (_raycastHit.rigidbody != null)
             groundVel = _raycastHit.rigidbody.velocity;
@@ -324,22 +279,6 @@ public class PlayerMovementController : NetworkBehaviour
             _isJumping = false;
         }
     }
-
-    void Action()
-    {
-        if (_puppetBehaviour.state != BehaviourPuppet.State.Puppet)
-            return;
-
-        // Begin Action
-        if (_input.IsActionInput(PlayerInput.InputType.Down))
-        {
-            if (!_isActing && _currentActionState == ActionState.melee)
-            {
-                CmdPlayerAction();
-            }
-        }
-    }
-
     #endregion
 
     #region Animation
@@ -375,65 +314,16 @@ public class PlayerMovementController : NetworkBehaviour
     }
     #endregion
 
-    #region ClientRpc Functions
-    [ClientRpc]
-    void RpcPlayerAction()
-    {
-        // Call Command Function
-        float duration = 1f;
-
-        _animator.SetTrigger("slap");
-        foreach (var contact in _explosiveContacts)
-            contact._enabled = true;
-
-        Invoke("ActionReset", duration);
-        Invoke("ExplosiveContactDisable", duration);
-    }
-
-
-    #endregion
-
-    #region Command Functions
-    [Command]
-    void CmdPlayerAction()
-    {
-        _isActing = true;
-
-        RpcPlayerAction();
-    }
-
-    [Command]
-    void CmdIsMoving(bool moving)
-    {
-        _isMoving = moving;
-    }
-
-    [Command]
-    void CmdIsGrounded(bool grounded)
-    {
-        _grounded = grounded;
-    }
-
-    [Command]
-    void CmdAddForceAtPosition(GameObject hitBody, Vector3 force, Vector3 location) {
-        hitBody.GetComponent<Rigidbody>().AddForceAtPosition(force, location);
-    }
-    #endregion
-
-    #region Public Networking Functions
-
-    #endregion
 
     #region Helper Functions
+
+    void AddForceAtPosition(GameObject hitBody, Vector3 force, Vector3 location) {
+        hitBody.GetComponent<Rigidbody>().AddForceAtPosition(force, location);
+    }
+
     private void ActionReset()
     {
         _isActing = false;
-    }
-
-    private void ExplosiveContactDisable()
-    {
-        foreach (var contact in _explosiveContacts)
-            contact._enabled = false;
     }
 
     private void SetJumpTimeCounter()
@@ -447,6 +337,7 @@ public class PlayerMovementController : NetworkBehaviour
             _jumpTimeCounter = _jumpTime;
         }
     }
+
     private void SetCoyoteTimeCounter()
     {
         if (_grounded)
@@ -458,6 +349,7 @@ public class PlayerMovementController : NetworkBehaviour
             _coyoteTimeCounter -= Time.fixedDeltaTime;
         }
     }
+
     private void SetJumpBufferCounter()
     {
         if (!_jumpWasPressedLastFrame && _input._jumpPressed)

@@ -24,9 +24,6 @@ public class PlayerBodyPart : MonoBehaviour
         {
             if (GetComponent<AudioSource>())
                 GetComponent<AudioSource>().Play();
-
-            if (collision.transform.tag == "Projectile")
-                status.ModifyHealth(-1f);
         }
 
     }
