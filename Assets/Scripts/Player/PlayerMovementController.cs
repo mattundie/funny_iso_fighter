@@ -63,8 +63,6 @@ public class PlayerMovementController : MonoBehaviour
 
     private RaycastHit _raycastHit;
 
-    private bool IsMouseOverGameWindow { get { return !(0 > Input.mousePosition.x || 0 > Input.mousePosition.y || Screen.width < Input.mousePosition.x || Screen.height < Input.mousePosition.y); } }
-
     private void Start()
     {
         _currentActionState = ActionState.melee;
@@ -290,27 +288,7 @@ public class PlayerMovementController : MonoBehaviour
         float clampedVelocity = _rb.velocity.magnitude / _maxSpeed;
         _animator.SetFloat("speed", clampedVelocity);
 
-        if (IsMouseOverGameWindow)
-        {
-            RaycastHit hit;
-
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            if (Physics.Raycast(ray, out hit, _raycastLayers))
-            {
-                _mouseTarget.position = new Vector3(hit.point.x, _rb.transform.position.y, hit.point.z);
-
-                float dist = (_mouseTarget.transform.position - _rb.transform.position).magnitude;
-                if (dist <= 1 && dist > 0)
-                {
-                    _rb.gameObject.GetComponent<AimIK>().solver.IKPositionWeight = dist;
-                }
-                else
-                {
-                    _rb.gameObject.GetComponent<AimIK>().solver.IKPositionWeight = 1;
-                }
-            }
-        }
+        _rb.gameObject.GetComponent<AimIK>().solver.IKPositionWeight = 1;
     }
     #endregion
 

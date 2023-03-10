@@ -13,7 +13,6 @@ public class PlayerStatusController : NetworkBehaviour
     public Transform HealthBar;
     public PlayerAvatar _avatar;
     public PlayerEffects _effects;
-    public PlayerCollisionDetection _collisionDetection;
     #endregion
 
     #region Status Data
