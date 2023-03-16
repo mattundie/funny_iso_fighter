@@ -16,6 +16,8 @@ public class PlayerInput : MonoBehaviour {
     private float _jumpTimeout = 0.2f;
     private float _jumpCounter = 0f;
 
+    private bool IsMouseOverGameWindow { get { return !(0 > Input.mousePosition.x || 0 > Input.mousePosition.y || Screen.width < Input.mousePosition.x || Screen.height < Input.mousePosition.y); } }
+
     public enum InputType {
         Down,
         Hold,
@@ -29,6 +31,7 @@ public class PlayerInput : MonoBehaviour {
         ActionDetection();
         MoveDetection();
         InteractDetection();
+        CursorController();
     }
 
     public bool IsJumpInput(InputType type) {
@@ -52,6 +55,20 @@ public class PlayerInput : MonoBehaviour {
         }
 
         return false;
+    }
+
+    void CursorController()
+    {
+        if (IsMouseOverGameWindow)
+        {
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Confined;
+        }
+        else
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
     }
 
     void JumpDetection() {

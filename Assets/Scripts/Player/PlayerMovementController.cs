@@ -17,8 +17,9 @@ public class PlayerMovementController : MonoBehaviour
     [SerializeField] public PlayerInput _input;
     [SerializeField] public GameObject _puppet;
     [SerializeField] private BehaviourPuppet _puppetBehaviour;
-    [SerializeField] private Transform _mouseTarget;
     [SerializeField] private Transform _raycastCenter;
+    [SerializeField] private Transform _mainCamera;
+    [SerializeField] private Transform _cameraAnchor;
     [SerializeField] private LayerMask _raycastLayers;
 
     [Header("Move Settings")]
@@ -28,6 +29,9 @@ public class PlayerMovementController : MonoBehaviour
     [SerializeField] private float _maxAccelForce = 400f;
     [SerializeField] private AnimationCurve _maxAccelerationForceFactorFromDot;
     [SerializeField] private Vector3 _forceScale = new Vector3(1, 0, 1);
+    [SerializeField] private float sensitivity = 100f; // The mouse sensitivity
+    [SerializeField] private float yaw = 0f; // The yaw angle
+    [SerializeField] private float pitch = 90f; // The pitch angle
 
     [Header("Hover Settings")]
     [SerializeField] private float _rotateSpeed = 500f;
@@ -53,7 +57,9 @@ public class PlayerMovementController : MonoBehaviour
     [SerializeField] public bool _grounded;
     [SerializeField] private bool _enabled;
     [SerializeField] private ActionState _currentActionState;
-    
+
+    private bool IsMouseOverGameWindow { get { return !(0 > Input.mousePosition.x || 0 > Input.mousePosition.y || Screen.width < Input.mousePosition.x || Screen.height < Input.mousePosition.y); } }
+
 
     private enum ActionState
     {
@@ -73,12 +79,12 @@ public class PlayerMovementController : MonoBehaviour
     {
         if (!_enabled) { return; }
 
-        Animate();
-
         if (_puppetBehaviour.state == BehaviourPuppet.State.Puppet)
         {
             Rotate();
         }
+
+        Animate();
     }
 
     private void FixedUpdate()
@@ -186,19 +192,21 @@ public class PlayerMovementController : MonoBehaviour
     void Move()
     {
         Vector3 groundVel;
-        Vector3 move = _input._moveInput.normalized.ToIso();
-        Vector3 m_UnitGoal = move;
         Vector3 m_GoalVel = _rb.velocity;
         Vector3 unitVel = m_GoalVel.normalized;
 
-        if(_puppetBehaviour.state != BehaviourPuppet.State.Puppet)
+        Vector3 movement = ((_input._moveInput.x * _rb.transform.right.normalized) + (_input._moveInput.z * _rb.transform.forward.normalized)).normalized;
+        float targetAngle = Mathf.Atan2(movement.x, movement.z) * Mathf.Rad2Deg;
+        Vector3 m_UnitGoal = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
+
+        if (_puppetBehaviour.state != BehaviourPuppet.State.Puppet)
         {
             _isMoving = false;
 
             return;
         }
 
-        if (move == Vector3.zero)
+        if (_input._moveInput.normalized == Vector3.zero)
         {
             if (_grounded)
                 _rb.velocity = _rb.velocity * 0.9f;
@@ -234,17 +242,19 @@ public class PlayerMovementController : MonoBehaviour
 
     void Rotate()
     {
-        if (_input._moveInput == Vector3.zero)
-        {
-            _rb.angularVelocity = _rb.angularVelocity * 0.05f;
+        if (_puppetBehaviour.state != BehaviourPuppet.State.Puppet)
             return;
-        }
 
-        Vector3 movementDirection = _input._moveInput.ToIso();
-        movementDirection.Normalize();
+        // Get the mouse movement
+        float mouseX = Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime;
+        pitch = ClampAngle(pitch - Input.GetAxis("Mouse Y") * sensitivity * Time.deltaTime, -45f, 60f);
 
-        Quaternion toRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
-        _rb.transform.rotation = Quaternion.RotateTowards(_rb.transform.rotation, toRotation, _rotateSpeed * Time.deltaTime);
+        // Update the yaw and pitch angles
+        yaw += mouseX;
+
+        // Rotate the player based on the yaw and pitch angles
+        _rb.transform.eulerAngles = new Vector3(0f, yaw, 0f);
+        _cameraAnchor.transform.eulerAngles = new Vector3(pitch, _cameraAnchor.transform.eulerAngles.y, _cameraAnchor.transform.eulerAngles.z);
     }
 
     void Jump()
@@ -341,6 +351,14 @@ public class PlayerMovementController : MonoBehaviour
         _jumpWasPressedLastFrame = _input._jumpPressed;
     }
     #endregion
+
+    // Clamping Euler angles
+    private float ClampAngle(float angle, float min, float max)
+    {
+        if (angle < -360) angle += 360;
+        if (angle > 360) angle -= 360;
+        return Mathf.Clamp(angle, min, max);
+    }
 }
 
 
